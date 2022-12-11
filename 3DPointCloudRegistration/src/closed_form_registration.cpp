@@ -132,15 +132,15 @@ void pose_estimation_3d3d(const vector<Point3f> &pts1,
   }
 
   // compute q1*q2^T
-  Eigen::Matrix3d W = Eigen::Matrix3d::Zero();
+  Eigen::Matrix3d H = Eigen::Matrix3d::Zero();
   for (int i = 0; i < N; i++) {
-    W += Eigen::Vector3d(q1[i].x, q1[i].y, q1[i].z) *
+    H += Eigen::Vector3d(q1[i].x, q1[i].y, q1[i].z) *
          Eigen::Vector3d(q2[i].x, q2[i].y, q2[i].z).transpose();
   }
-  cout << "W=" << W << endl;
+  cout << "H=" << H << endl;
 
-  // SVD on W
-  Eigen::JacobiSVD<Eigen::Matrix3d> svd(W, Eigen::ComputeFullU |
+  // SVD on H
+  Eigen::JacobiSVD<Eigen::Matrix3d> svd(H, Eigen::ComputeFullU |
                                                Eigen::ComputeFullV);
   Eigen::Matrix3d U = svd.matrixU();
   Eigen::Matrix3d V = svd.matrixV();
