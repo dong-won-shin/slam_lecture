@@ -54,20 +54,6 @@ scripts/                환경 설치 스크립트
 
 각 실습의 `src/`에는 코드가 있고, 파일 입력이 필요한 실습에는 `data/`가 있다. 실행 파일은 해당 실습의 `build/`에 생성된다. 저장소 루트의 `build/`는 공용 의존성과 컴파일 캐시에 사용한다.
 
-### macOS에서 한 실습이 빌드되는 경로
-
-```mermaid
-flowchart TD
-    packages["build/deps · CMake, Ninja, OpenCV, Ceres, PCL"] --> shared["build/macos · 공용 CMake 빌드"]
-    source["3rdparty/g2o · 강의에서 사용하는 소스"] --> shared
-    shared --> g2o["build/macos/lib · g2o 정적 라이브러리"]
-    g2o --> pose["14_pose_graph/build · 포즈 그래프 실행 파일"]
-    shared --> pose
-    pose --> result["run.sh · 주행 궤적 창과 result.g2o"]
-```
-
-포즈 그래프를 예로 들면, 실습 폴더에서 실행한 `ninja`가 공용 빌드를 호출한다. 공용 빌드는 g2o를 컴파일하고 실습 실행 파일에 정적으로 링크한다. 실행할 때는 `build/deps/lib`의 OpenCV를 불러와 주행 궤적을 그린다.
-
 ## macOS에서 시작하기
 
 Xcode Command Line Tools가 필요하다. `xcode-select -p`에서 경로를 찾을 수 없으면 `xcode-select --install`로 설치한다. 아래 명령은 저장소 루트에서 실행한다.
