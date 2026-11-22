@@ -13,3 +13,9 @@
 ./g2o_curve_fitting
 ./ceres_curve_fitting
 ```
+
+## 실행 영상
+
+![세 곡선 피팅 프로그램의 터미널 실행과 최종 계수](media/preview.gif)
+
+Gauss–Newton, g2o, Ceres를 같은 터미널에서 차례로 실행한다. 각 명령의 마지막 줄에서 세 방법이 추정한 계수 $a,b,c$를 비교할 수 있다. [MP4로 보기 · 9.8초](media/demo.mp4)

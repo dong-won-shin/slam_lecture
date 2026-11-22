@@ -33,3 +33,9 @@ OpenCV는 RANSAC으로 대응점을 선별한다. Gauss–Newton과 g2o는 깊�
 ```bash
 SLAM_HEADLESS=1 ./lessons/02_visual_odometry/09_pnp/run.sh
 ```
+
+## 실행 영상
+
+![PnP 점군을 회전하고 자세 추정 방법을 전환하는 과정](media/preview.gif)
+
+점군을 회전하고 대응점을 고른 뒤 OpenCV P3P, Gauss–Newton, g2o 순서로 전환한다. 오른쪽 확대 영상에서 선택한 자세의 재투영 위치를 확인한다. [MP4로 보기 · 7.6초](media/demo.mp4)

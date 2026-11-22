@@ -12,3 +12,9 @@
 ./closed_form_registration ../data/1.png ../data/2.png ../data/1_depth.png ../data/2_depth.png
 ./iterative_form_registration ../data/room_scan1.pcd ../data/room_scan2.pcd
 ```
+
+## 실행 영상
+
+![RGB-D 정합과 두 실내 점군의 ICP를 실행해 변환 행렬을 확인하는 터미널](media/preview.gif)
+
+먼저 RGB-D 대응점으로 구한 회전과 이동을 출력한 뒤, 두 방 스캔에 ICP를 실행한다. 마지막 4×4 행렬은 첫 스캔을 두 번째 스캔 좌표계로 옮기는 변환이다. [MP4로 보기 · 9.8초](media/demo.mp4)

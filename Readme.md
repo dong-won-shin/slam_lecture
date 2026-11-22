@@ -21,24 +21,30 @@ flowchart LR
     revisit --> graph
 ```
 
-| 실습 | 단원 | 주제와 실행 방법 | 실습 목표 |
-|---|---|---|---|
-| 01 | 기초 | [센서 좌표계와 카메라 투영](lessons/01_foundations/01_camera_projection/readme.md) | LiDAR 점을 카메라 좌표계로 옮긴 뒤 영상에 투영한다. |
-| 02 | 기초 | [비선형 최소제곱](lessons/01_foundations/02_least_squares/readme.md) | 같은 곡선 피팅 문제를 Gauss–Newton, Ceres, g2o로 푼다. |
-| 03 | 기초 | [칼만 필터](lessons/01_foundations/03_kalman_filter/readme.md) | 위치 관측값으로 위치·속도·가속도를 추정한다. |
-| 04 | 비주얼 오도메트리 | [지역 특징점과 매칭](lessons/02_visual_odometry/04_local_features/readme.md) | 같은 영상 쌍에서 ORB와 SuperPoint로 대응점을 찾는다. |
-| 05 | 비주얼 오도메트리 | [Optical flow](lessons/02_visual_odometry/05_optical_flow/readme.md) | 실내 촬영 동영상의 연속 프레임에서 LK의 코너 추적과 DIS의 픽셀별 이동장을 비교한다. |
-| 06 | 비주얼 오도메트리 | [에피폴라 기하](lessons/02_visual_odometry/06_epipolar_geometry/readme.md) | 한 사진의 점을 선택해 다른 사진의 에피폴라 선과 관측된 대응점 사이의 거리를 확인한다. |
-| 07 | 비주얼 오도메트리 | [두 시점 삼각측량](lessons/02_visual_odometry/07_triangulation/readme.md) | 두 사진의 대응점에서 3D 점을 복원하고, 장면을 회전하며 두 카메라의 관측 광선을 비교한다. |
-| 08 | 비주얼 오도메트리 | [OpenGV 삼각측량](lessons/02_visual_odometry/08_opengv_triangulation/readme.md) | 합성 장면을 3D로 회전하며 OpenGV 두 방법의 복원점과 정답 사이의 거리를 비교한다. |
-| 09 | 비주얼 오도메트리 | [PnP와 카메라 자세](lessons/02_visual_odometry/09_pnp/readme.md) | RGB-D 기준점과 추정 카메라 자세를 3D로 보고, 세 방법의 재투영 오차를 영상에서 비교한다. |
-| 10 | 포인트 클라우드 | [포인트 클라우드 처리](lessons/03_point_clouds/10_point_cloud_processing/readme.md) | 점군을 필터링하고 법선을 추정한 뒤 군집을 분리한다. |
-| 11 | 포인트 클라우드 | [점군 정합](lessons/03_point_clouds/11_point_cloud_registration/readme.md) | 대응점 기반 SVD 정합과 반복 최근접점 정합(ICP)을 실험한다. |
-| 12 | SLAM 백엔드 | [번들 조정](lessons/04_slam_backend/12_bundle_adjustment/readme.md) | Ceres가 카메라와 3D 점을 함께 조정하는 과정을 단계별로 재생하고 재투영 오차를 확인한다. |
-| 13 | SLAM 백엔드 | [루프 폐쇄 후보 검색](lessons/04_slam_backend/13_loop_closure/readme.md) | KITTI 주행 사진에서 같은 도로의 재방문 후보를 찾고 DBoW3 검색 순위와 ORB 대응점을 비교한다. |
-| 14 | SLAM 백엔드 | [포즈 그래프 최적화](lessons/04_slam_backend/14_pose_graph/readme.md) | KITTI 차량 주행 궤적에 재방문 제약을 적용하고 초기 경로와 최적화 경로를 3D로 비교한다. |
+| 실습 | 단원 | 주제와 실행 방법 | 실습 목표 | 구동 영상 |
+|---|---|---|---|---|
+| 01 | 기초 | [센서 좌표계와 카메라 투영](lessons/01_foundations/01_camera_projection/readme.md) | LiDAR 점을 카메라 좌표계로 옮긴 뒤 영상에 투영한다. | [MP4](lessons/01_foundations/01_camera_projection/media/demo.mp4) |
+| 02 | 기초 | [비선형 최소제곱](lessons/01_foundations/02_least_squares/readme.md) | 같은 곡선 피팅 문제를 Gauss–Newton, Ceres, g2o로 푼다. | [MP4](lessons/01_foundations/02_least_squares/media/demo.mp4) |
+| 03 | 기초 | [칼만 필터](lessons/01_foundations/03_kalman_filter/readme.md) | 위치 관측값으로 위치·속도·가속도를 추정한다. | [MP4](lessons/01_foundations/03_kalman_filter/media/demo.mp4) |
+| 04 | 비주얼 오도메트리 | [지역 특징점과 매칭](lessons/02_visual_odometry/04_local_features/readme.md) | 같은 영상 쌍에서 ORB와 SuperPoint로 대응점을 찾는다. | [MP4](lessons/02_visual_odometry/04_local_features/media/demo.mp4) |
+| 05 | 비주얼 오도메트리 | [Optical flow](lessons/02_visual_odometry/05_optical_flow/readme.md) | 실내 촬영 동영상의 연속 프레임에서 LK의 코너 추적과 DIS의 픽셀별 이동장을 비교한다. | [MP4](lessons/02_visual_odometry/05_optical_flow/media/demo.mp4) |
+| 06 | 비주얼 오도메트리 | [에피폴라 기하](lessons/02_visual_odometry/06_epipolar_geometry/readme.md) | 한 사진의 점을 선택해 다른 사진의 에피폴라 선과 관측된 대응점 사이의 거리를 확인한다. | [MP4](lessons/02_visual_odometry/06_epipolar_geometry/media/demo.mp4) |
+| 07 | 비주얼 오도메트리 | [두 시점 삼각측량](lessons/02_visual_odometry/07_triangulation/readme.md) | 두 사진의 대응점에서 3D 점을 복원하고, 장면을 회전하며 두 카메라의 관측 광선을 비교한다. | [MP4](lessons/02_visual_odometry/07_triangulation/media/demo.mp4) |
+| 08 | 비주얼 오도메트리 | [OpenGV 삼각측량](lessons/02_visual_odometry/08_opengv_triangulation/readme.md) | 합성 장면을 3D로 회전하며 OpenGV 두 방법의 복원점과 정답 사이의 거리를 비교한다. | [MP4](lessons/02_visual_odometry/08_opengv_triangulation/media/demo.mp4) |
+| 09 | 비주얼 오도메트리 | [PnP와 카메라 자세](lessons/02_visual_odometry/09_pnp/readme.md) | RGB-D 기준점과 추정 카메라 자세를 3D로 보고, 세 방법의 재투영 오차를 영상에서 비교한다. | [MP4](lessons/02_visual_odometry/09_pnp/media/demo.mp4) |
+| 10 | 포인트 클라우드 | [포인트 클라우드 처리](lessons/03_point_clouds/10_point_cloud_processing/readme.md) | 점군을 필터링하고 법선을 추정한 뒤 군집을 분리한다. | [MP4](lessons/03_point_clouds/10_point_cloud_processing/media/demo.mp4) |
+| 11 | 포인트 클라우드 | [점군 정합](lessons/03_point_clouds/11_point_cloud_registration/readme.md) | 대응점 기반 SVD 정합과 반복 최근접점 정합(ICP)을 실험한다. | [MP4](lessons/03_point_clouds/11_point_cloud_registration/media/demo.mp4) |
+| 12 | SLAM 백엔드 | [번들 조정](lessons/04_slam_backend/12_bundle_adjustment/readme.md) | Ceres가 카메라와 3D 점을 함께 조정하는 과정을 단계별로 재생하고 재투영 오차를 확인한다. | [MP4](lessons/04_slam_backend/12_bundle_adjustment/media/demo.mp4) |
+| 13 | SLAM 백엔드 | [루프 폐쇄 후보 검색](lessons/04_slam_backend/13_loop_closure/readme.md) | KITTI 주행 사진에서 같은 도로의 재방문 후보를 찾고 DBoW3 검색 순위와 ORB 대응점을 비교한다. | [MP4](lessons/04_slam_backend/13_loop_closure/media/demo.mp4) |
+| 14 | SLAM 백엔드 | [포즈 그래프 최적화](lessons/04_slam_backend/14_pose_graph/readme.md) | KITTI 차량 주행 궤적에 재방문 제약을 적용하고 초기 경로와 최적화 경로를 3D로 비교한다. | [MP4](lessons/04_slam_backend/14_pose_graph/media/demo.mp4) |
 
 07번 두 시점 삼각측량은 카메라 좌표계에 맞춰 +Y축을 화면 아래쪽에 표시한다. 다른 3D 뷰어는 +Y축을 화면 위쪽에 표시한다.
+
+### 차량 주행 궤적 실행 영상
+
+![KITTI 예제의 포즈 그래프 최적화를 초기 상태부터 단계별로 재생한 화면](lessons/04_slam_backend/14_pose_graph/media/preview.gif)
+
+왼쪽은 초기 궤적이고 오른쪽은 g2o의 각 반복에서 얻은 궤적이다. 각 실습의 README에서도 해당 예제의 실행 장면을 볼 수 있다. [주행 궤적 MP4](lessons/04_slam_backend/14_pose_graph/media/demo.mp4)
 
 ## 폴더 구조
 

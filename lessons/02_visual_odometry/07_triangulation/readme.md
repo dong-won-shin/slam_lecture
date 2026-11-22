@@ -32,3 +32,9 @@ ORB 대응점으로 본질 행렬을 추정하고 RANSAC과 양의 깊이 검사
 ```bash
 SLAM_HEADLESS=1 ./lessons/02_visual_odometry/07_triangulation/run.sh
 ```
+
+## 실행 영상
+
+![두 카메라와 관측 광선을 회전하고 다른 삼각측량 점을 고르는 과정](media/preview.gif)
+
+3D 장면을 회전한 뒤 다음 복원점을 선택한다. 왼쪽의 두 광선과 오른쪽 두 사진의 고리가 함께 바뀌는 모습을 볼 수 있다. [MP4로 보기 · 7.6초](media/demo.mp4)

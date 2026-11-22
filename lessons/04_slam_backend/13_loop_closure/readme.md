@@ -56,3 +56,9 @@
 공식 기준 궤적(`poses/00.txt`)에서 인접 위치 사이의 3D 거리를 더하면 첫 세 쌍은 각각 약 2.35km, 14번과 1번은 약 3.63km를 주행한 뒤 같은 장소에 돌아온 경우다. 이 위치 정보는 재방문 사진을 고르는 데 사용했으며, 뷰어의 순위는 사진의 DBoW3 점수로 계산한다.
 
 사진은 KITTI Vision Benchmark Suite의 원본 PNG에서 파일명만 바꿔 수록했다. 데이터 제공자는 Andreas Geiger, Philip Lenz, Christoph Stiller, Raquel Urtasun이다. 사진의 이용 조건은 CC BY-NC-SA 3.0이다. [KITTI Odometry 데이터](https://www.cvlibs.net/datasets/kitti/eval_odometry.php) · [KITTI 저작권 안내](https://www.cvlibs.net/datasets/kitti/) · [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/)
+
+## 실행 영상
+
+![KITTI 10번 질의에서 검색 1위와 실제 검증된 2위 후보 사이를 전환하는 과정](media/preview.gif)
+
+10번 질의에서 대응선을 켜고, 검색 1위로 기각된 5번과 2위로 검증된 3번을 번갈아 선택한다. 다음 질의로 이동하면 그 질의의 재방문 후보가 표시된다. [MP4로 보기 · 7.6초](media/demo.mp4)

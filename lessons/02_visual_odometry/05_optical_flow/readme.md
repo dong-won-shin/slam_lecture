@@ -56,3 +56,9 @@ SLAM_HEADLESS=1 ./dis_optical_flow ../data/1.png ../data/2.png
 ```
 
 각각 `optical_flow.png`와 `dis_optical_flow.png`를 저장한다. 두 실행 파일 모두 터미널에 변위의 성분별 중앙값을 출력한다. LK는 왕복 검사를 통과한 코너에서, DIS는 전체 픽셀에서 계산하므로 두 값은 서로 다를 수 있다. OpenCV 3에서 DIS를 빌드할 때는 contrib의 `optflow` 모듈이 필요하다.
+
+## 실행 영상
+
+![실내 영상에서 LK 코너 추적과 DIS의 픽셀별 이동장을 함께 재생한 화면](media/preview.gif)
+
+같은 실내 영상을 LK와 DIS로 각각 실행해 두 창의 녹화를 위아래로 배치했다. 위쪽에서는 추적에 성공한 코너를, 아래쪽에서는 같은 구간의 픽셀별 이동 방향과 크기를 볼 수 있다. [MP4로 보기 · 6.1초](media/demo.mp4)

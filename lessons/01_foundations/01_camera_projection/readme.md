@@ -11,3 +11,9 @@ LiDAR 점을 카메라 좌표계로 옮긴 뒤 영상에 투영한다. 영상의
 ```bash
 ./3d_point_camera_projection ../data/image/0000000000.png ../data/dat/C51_LidarPts_0000.dat
 ```
+
+## 실행 영상
+
+![도로 영상에 투영된 LiDAR 점을 확대했다가 전체 시야로 돌아가는 과정](media/preview.gif)
+
+영상 중앙의 앞차를 확대해 색점이 차체의 어느 부분에 맺히는지 확인한 뒤 전체 도로 장면과 비교한다. [MP4로 보기 · 7.6초](media/demo.mp4)

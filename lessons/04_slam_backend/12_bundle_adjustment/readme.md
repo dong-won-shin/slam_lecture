@@ -38,3 +38,9 @@ SLAM_HEADLESS=1 ./lessons/04_slam_backend/12_bundle_adjustment/run.sh
 ```
 
 실습 폴더의 `build/`에 재생 영상 `ba_iterations.mp4`와 마지막 화면 `ba_final.png`가 저장된다. 초기·최종 전체 점군은 각각 `initial.ply`와 `final.ply`에 저장된다.
+
+## 실행 영상
+
+![Ceres 번들 조정 뷰어에서 반복별 카메라와 점군, 오차 그래프가 변하는 과정](media/preview.gif)
+
+초기 상태에서 재생을 시작한다. 카메라와 점군이 함께 움직일 때 오른쪽 그래프의 비용과 재투영 RMS가 어떻게 줄어드는지 보고, 마지막에 최종 상태로 이동한다. [MP4로 보기 · 7.6초](media/demo.mp4)

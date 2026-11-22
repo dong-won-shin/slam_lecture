@@ -43,3 +43,9 @@ cd lessons/02_visual_odometry/04_local_features
 ```
 
 첫 실행 시 사전학습 가중치를 `build/model-cache/`에 내려받습니다. CPU에서 추론합니다. 모델의 출처와 사용 조건은 [SuperPoint 모델 카드](https://huggingface.co/magic-leap-community/superpoint)를 참고하세요.
+
+## 실행 영상
+
+![ORB 매칭 뷰어에서 책상 장면의 대응선을 확대하는 모습](media/preview.gif)
+
+ORB 뷰어에서 상단의 대응선을 확대했다가 원래 배율로 돌아온다. 선의 양 끝이 두 영상에서 같은 물체의 같은 모서리에 놓이는지 살펴본다. [MP4로 보기 · 7.6초](media/demo.mp4)

@@ -42,3 +42,9 @@ python3 data/make_kitti_graph.py /path/to/poses/00.txt data/kitti_00.g2o
 ```
 
 `data/kitti_00.g2o`는 Andreas Geiger, Philip Lenz, Christoph Stiller, Raquel Urtasun의 KITTI 데이터를 위 방식으로 가공한 자료이며 원본과 같은 CC BY-NC-SA 3.0으로 제공한다. [KITTI Odometry](https://www.cvlibs.net/datasets/kitti/eval_odometry.php) · [KITTI 이용 조건](https://www.cvlibs.net/datasets/kitti/) · [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/)
+
+## 실행 영상
+
+![KITTI 차량의 초기 궤적과 최적화 반복별 궤적을 한 창에서 비교하는 과정](media/preview.gif)
+
+최종 상태에서 `0`으로 돌아간 뒤 반복을 진행하고 마지막 결과로 이동한다. 왼쪽의 초기 궤적을 기준으로 오른쪽의 노란 출발점과 흰 도착점 사이가 좁아지는 과정을 비교한다. [MP4로 보기 · 7.6초](media/demo.mp4)

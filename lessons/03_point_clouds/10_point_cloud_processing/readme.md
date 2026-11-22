@@ -15,3 +15,9 @@
 ./normal_estimation ../data/ne_data.pcd
 ./clustering ../data/clustering_data.pcd
 ```
+
+## 실행 영상
+
+![PCL 법선 추정 뷰어의 점군을 회전해 표면에서 나온 짧은 선을 살펴보는 모습](media/preview.gif)
+
+`normal_estimation`이 계산한 점군을 회전한다. 물체의 윤곽에서 바깥으로 뻗는 짧은 선은 20개 점마다 하나씩 길이 3cm로 표시한 표면 법선이다. [MP4로 보기 · 6.6초](media/demo.mp4)

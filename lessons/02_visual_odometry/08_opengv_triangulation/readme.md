@@ -25,3 +25,9 @@
 ```bash
 SLAM_HEADLESS=1 ./lessons/02_visual_odometry/08_opengv_triangulation/run.sh --seed 20
 ```
+
+## 실행 영상
+
+![OpenGV 합성 장면을 회전하며 두 삼각측량 추정점과 정답을 비교하는 과정](media/preview.gif)
+
+같은 합성 장면(`--seed 20`)을 회전하고 점을 바꾼다. 전체 장면에서 겹쳐 보이는 두 추정점의 차이가 오른쪽 아래 확대도에 나타난다. [MP4로 보기 · 7.6초](media/demo.mp4)
