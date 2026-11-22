@@ -87,7 +87,7 @@ lecture_example(test_triangulation ${opengv_triangulation_dir} test_triangulatio
 target_include_directories(test_triangulation PRIVATE common)
 target_link_libraries(test_triangulation PRIVATE lecture_opengv ${OpenCV_LIBS})
 lecture_example(pose_estimation_3d2d ${pnp_dir} pose_estimation_3d2d.cpp)
-target_include_directories(pose_estimation_3d2d PRIVATE 3rdparty/Sophus)
+target_include_directories(pose_estimation_3d2d PRIVATE common 3rdparty/Sophus)
 target_link_libraries(pose_estimation_3d2d PRIVATE core ${OpenCV_LIBS})
 
 # 03. Point clouds

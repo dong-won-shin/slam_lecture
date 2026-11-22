@@ -14,6 +14,8 @@
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <sophus/se3.hpp>
+#include <opencv2/core/eigen.hpp>
+#include "pnp_view.hpp"
 
 using namespace std;
 using namespace cv;
@@ -47,13 +49,17 @@ int main(int argc, char **argv) {
   }
   Mat img_1 = imread(argv[1], cv::IMREAD_COLOR);
   Mat img_2 = imread(argv[2], cv::IMREAD_COLOR);
-  assert(img_1.data && img_2.data && "Can not load images!");
+  Mat d1 = imread(argv[3], cv::IMREAD_UNCHANGED);
+  if (img_1.empty() || img_2.empty() || d1.type() != CV_16UC1 || d1.size() != img_1.size()) {
+    cerr << "Provide two readable color images and a matching 16-bit depth image for camera 1.\n";
+    return 1;
+  }
 
   vector<KeyPoint> keypoints_1, keypoints_2;
   vector<DMatch> matches;
   find_feature_matches(img_1, img_2, keypoints_1, keypoints_2, matches);
 
-  Mat d1 = imread(argv[3], cv::IMREAD_UNCHANGED);
+  const double depth_scale = 5000.0;
   Mat K = (Mat_<double>(3, 3) << 520.9, 0, 325.1, 0, 521.0, 249.7, 0, 0, 1);
   vector<Point3f> pts_3d;
   vector<Point2f> pts_2d;
@@ -62,7 +68,7 @@ int main(int argc, char **argv) {
         int(keypoints_1[m.queryIdx].pt.y))[int(keypoints_1[m.queryIdx].pt.x)];
     if (d == 0) // bad depth
       continue;
-    float dd = d / 5000.0;
+    float dd = d / depth_scale;
     Point2d p1 = pixel2cam(keypoints_1[m.queryIdx].pt, K);
     pts_3d.push_back(Point3f(p1.x * dd, p1.y * dd, dd));
     pts_2d.push_back(keypoints_2[m.trainIdx].pt);
@@ -72,8 +78,11 @@ int main(int argc, char **argv) {
 
   chrono::steady_clock::time_point t1 = chrono::steady_clock::now();
   Mat r, t, inliers;
-  solvePnPRansac(pts_3d, pts_2d, K, Mat(), r, t, false, 100, 8.0, 0.99, inliers,
-                 SOLVEPNP_P3P);
+  if (pts_3d.size() < 4 || !solvePnPRansac(pts_3d, pts_2d, K, Mat(), r, t, false, 100, 8.0, 0.99, inliers,
+                 SOLVEPNP_P3P)) {
+    cerr << "Could not estimate a camera pose from the depth-backed matches.\n";
+    return 1;
+  }
   Mat R;
   cv::Rodrigues(r, R);
   chrono::steady_clock::time_point t2 = chrono::steady_clock::now();
@@ -110,7 +119,21 @@ int main(int argc, char **argv) {
   time_used = chrono::duration_cast<chrono::duration<double>>(t2 - t1);
   cout << "solve p3p by g2o cost time: " << time_used.count() << " seconds."
        << endl;
-  return 0;
+  auto estimate = [](const char *name, const Sophus::SE3d &pose) {
+    Mat rotation, translation;
+    eigen2cv(pose.rotationMatrix(), rotation);
+    eigen2cv(pose.translation(), translation);
+    return PnPPose{name, Matx33d(rotation), Vec3d(translation)};
+  };
+  if (!pose_gn.matrix().allFinite() || !pose_g2o.matrix().allFinite()) {
+    cerr << "A pose estimate contains non-finite coordinates.\n";
+    return 1;
+  }
+  const array<PnPPose, 3> poses{{{"OpenCV P3P", Matx33d(R), Vec3d(t)},
+                                 estimate("Gauss-Newton", pose_gn), estimate("g2o", pose_g2o)}};
+  cout << "RANSAC inliers: " << inliers.total() << " / " << pts_3d.size() << endl;
+  PnPView view(img_1, img_2, d1, depth_scale, Matx33d(K), pts_3d, pts_2d, inliers, poses);
+  return view.show();
 }
 
 void find_feature_matches(const Mat &img_1, const Mat &img_2,
@@ -135,6 +158,7 @@ void find_feature_matches(const Mat &img_1, const Mat &img_2,
 
   vector<DMatch> match;
   // BFMatcher matcher ( NORM_HAMMING );
+  if (descriptors_1.empty() || descriptors_2.empty()) return;
   matcher->match(descriptors_1, descriptors_2, match);
 
   double min_dist = 10000, max_dist = 0;

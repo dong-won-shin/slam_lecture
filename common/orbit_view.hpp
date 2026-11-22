@@ -14,6 +14,7 @@ class OrbitView {
   OrbitView(const std::string &title, size_t count) : title_(title), count_(count) {}
   virtual ~OrbitView() = default;
   virtual cv::Mat render() const = 0;
+  virtual bool handle_key(int) { return false; }
 
   const cv::Rect scene_{12, 48, 762, 530};
   size_t selected_ = 0;
@@ -52,7 +53,7 @@ class OrbitView {
         case '+': case '=': zoom_ = std::min(8.0, zoom_ * 1.25); break;
         case '-': zoom_ = std::max(0.25, zoom_ / 1.25); break;
         case 'r': yaw_ = initial_yaw; pitch_ = initial_pitch; zoom_ = 1.0; break;
-        default: continue;
+        default: if (!handle_key(key)) continue;
       }
       cv::imshow(title_, render());
     }
@@ -70,6 +71,19 @@ class OrbitView {
   cv::Point project(const cv::Vec3d &p) const {
     const cv::Point2d q = rotate(p) * (scale_ * zoom_);
     return {cvRound(scene_.width / 2 + q.x), cvRound(scene_.height / 2 + q.y)};
+  }
+
+  void draw_camera(cv::Mat &scene, const cv::Vec3d &center, const cv::Matx33d &orientation,
+              cv::Size size, const cv::Matx33d &invK, double length, cv::Scalar color) const {
+    const double w = size.width - 1, h = size.height - 1;
+    const cv::Point2d corners[] = {{0, 0}, {w, 0}, {w, h}, {0, h}};
+    std::vector<cv::Point> rim;
+    for (const auto &pixel : corners) {
+      rim.push_back(project(center + orientation * (invK * cv::Vec3d(pixel.x, pixel.y, 1)) * length));
+      cv::line(scene, project(center), rim.back(), color, 1, cv::LINE_AA);
+    }
+    cv::polylines(scene, rim, true, color, 1, cv::LINE_AA);
+    cv::circle(scene, project(center), 4, color, -1, cv::LINE_AA);
   }
 
   static void text(cv::Mat &canvas, const std::string &s, cv::Point p, double size = 0.55) {

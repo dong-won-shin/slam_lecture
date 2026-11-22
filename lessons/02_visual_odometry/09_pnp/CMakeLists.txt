@@ -17,6 +17,7 @@ find_package(G2O REQUIRED)
 find_package(Sophus REQUIRED)
 
 include_directories(
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../../common"
         ${OpenCV_INCLUDE_DIRS}
         ${G2O_INCLUDE_DIRS}
         ${Sophus_INCLUDE_DIRS}

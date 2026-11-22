@@ -53,19 +53,6 @@ class TriangulationView : public lecture::OrbitView {
     return invK_ * cv::Vec3d(pixel.x, pixel.y, 1);
   }
 
-  void camera(cv::Mat &scene, const cv::Vec3d &center, const cv::Matx33d &orientation,
-              cv::Size size, cv::Scalar color) const {
-    const double w = size.width - 1, h = size.height - 1;
-    const cv::Point2d corners[] = {{0, 0}, {w, 0}, {w, h}, {0, h}};
-    std::vector<cv::Point> rim;
-    for (const auto &pixel : corners) {
-      rim.push_back(project(center + orientation * bearing(pixel) * 0.70));
-      cv::line(scene, project(center), rim.back(), color, 1, cv::LINE_AA);
-    }
-    cv::polylines(scene, rim, true, color, 1, cv::LINE_AA);
-    cv::circle(scene, project(center), 4, color, -1, cv::LINE_AA);
-  }
-
   cv::Mat render() const override {
     cv::Mat canvas(652, 1160, CV_8UC3, cv::Scalar(32, 28, 24));
     cv::Mat scene = canvas(scene_);
@@ -78,8 +65,8 @@ class TriangulationView : public lecture::OrbitView {
     cv::line(scene, project(origin), project(camera2_center_), {200, 200, 200}, 2, cv::LINE_AA);
     cv::line(scene, project(origin), project(ray1), color1_, 2, cv::LINE_AA);
     cv::line(scene, project(camera2_center_), project(ray2), color2_, 2, cv::LINE_AA);
-    camera(scene, origin, cv::Matx33d::eye(), first_.size(), color1_);
-    camera(scene, camera2_center_, camera2_rotation_, second_.size(), color2_);
+    draw_camera(scene, origin, cv::Matx33d::eye(), first_.size(), invK_, 0.70, color1_);
+    draw_camera(scene, camera2_center_, camera2_rotation_, second_.size(), invK_, 0.70, color2_);
     for (const auto &pt : points_)
       cv::circle(scene, project(pt.world), 3, depth_color(pt.world[2]), -1, cv::LINE_AA);
     cv::circle(scene, project(p.world), 9, {248, 248, 248}, 2, cv::LINE_AA);
