@@ -27,8 +27,5 @@ include_directories(
 add_executable(orb_cv src/orb_cv.cpp)
 target_link_libraries(orb_cv ${OpenCV_LIBS})
 
-add_executable(optical_flow src/optical_flow.cpp)
-target_link_libraries(optical_flow ${OpenCV_LIBS})
-
 # add_executable(orb_self orb_self.cpp)
 # target_link_libraries(orb_self ${OpenCV_LIBS})

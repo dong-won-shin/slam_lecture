@@ -17,7 +17,7 @@ set -eu
 cd "$(dirname "$0")"
 for lesson in lessons/*/*; do
   # The OpenGV extension has its own dependency on Linux.
-  [[ "$lesson" == */07_opengv_triangulation ]] && continue
+  [[ "$lesson" == */08_opengv_triangulation ]] && continue
   mkdir -p "$lesson/build"
   (cd "$lesson/build" && cmake .. && cmake --build .)
 done

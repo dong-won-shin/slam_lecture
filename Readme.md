@@ -1,6 +1,6 @@
 # SLAM 강의 실습
 
-한 장의 영상에 3D 점을 투영하는 것부터 시작해 두 시점 사이의 운동을 추정하고, 마지막에는 여러 관측의 오차를 함께 줄인다. 13개 실습은 각각 독립적으로 실행할 수 있다. 04~08은 특징점에서 카메라 자세까지 이어지는 비주얼 오도메트리 순서로, 11~13은 번들 조정·장소 인식·포즈 그래프 최적화 순서로 구성했다.
+한 장의 영상에 3D 점을 투영하는 것부터 시작해 두 시점 사이의 운동을 추정하고, 마지막에는 여러 관측의 오차를 함께 줄인다. 14개 실습은 각각 독립적으로 실행할 수 있다. 04~09번은 특징점에서 카메라 자세까지 이어지는 비주얼 오도메트리 순서로, 12~14번은 번들 조정·장소 인식·포즈 그래프 최적화 순서로 구성했다.
 
 ## 강의 순서
 
@@ -9,16 +9,17 @@
 | 01 | 기초 | [센서 좌표계와 카메라 투영](lessons/01_foundations/01_camera_projection/readme.md) | LiDAR 점을 카메라 좌표계로 옮긴 뒤 영상에 투영한다. |
 | 02 | 기초 | [비선형 최소제곱](lessons/01_foundations/02_least_squares/readme.md) | 같은 곡선 피팅 문제를 Gauss–Newton, Ceres, g2o로 푼다. |
 | 03 | 기초 | [칼만 필터](lessons/01_foundations/03_kalman_filter/readme.md) | 위치 관측값으로 위치·속도·가속도를 추정한다. |
-| 04 | 비주얼 오도메트리 | [지역 특징점과 매칭](lessons/02_visual_odometry/04_local_features/readme.md) | 같은 영상 쌍에서 ORB·SuperPoint 매칭과 optical flow 추적을 비교한다. |
-| 05 | 비주얼 오도메트리 | [에피폴라 기하](lessons/02_visual_odometry/05_epipolar_geometry/readme.md) | 2D 대응점으로 기본 행렬과 본질 행렬을 구하고 상대 자세를 복원한다. |
-| 06 | 비주얼 오도메트리 | [두 시점 삼각측량](lessons/02_visual_odometry/06_triangulation/readme.md) | 두 카메라의 자세와 대응점으로 3D 점을 복원한다. |
-| 07 | 비주얼 오도메트리 | [OpenGV 삼각측량](lessons/02_visual_odometry/07_opengv_triangulation/readme.md) | 정답 3D 좌표가 있는 합성 장면에서 두 삼각측량 방법을 비교한다. |
-| 08 | 비주얼 오도메트리 | [PnP와 카메라 자세](lessons/02_visual_odometry/08_pnp/readme.md) | 깊이 영상으로 얻은 3D 점과 다음 영상의 2D 점으로 카메라 자세를 구한다. |
-| 09 | 포인트 클라우드 | [포인트 클라우드 처리](lessons/03_point_clouds/09_point_cloud_processing/readme.md) | 점군을 필터링하고 법선을 추정한 뒤 군집을 분리한다. |
-| 10 | 포인트 클라우드 | [점군 정합](lessons/03_point_clouds/10_point_cloud_registration/readme.md) | 대응점 기반 SVD 정합과 반복 최근접점 정합(ICP)을 실험한다. |
-| 11 | SLAM 백엔드 | [번들 조정](lessons/04_slam_backend/11_bundle_adjustment/readme.md) | 여러 영상의 재투영 오차를 줄이도록 카메라와 3D 점을 함께 최적화한다. |
-| 12 | SLAM 백엔드 | [루프 폐쇄 후보 검색](lessons/04_slam_backend/12_loop_closure/readme.md) | 시각 단어 사전으로 과거 영상 중 같은 장소의 후보를 검색한다. |
-| 13 | SLAM 백엔드 | [포즈 그래프 최적화](lessons/04_slam_backend/13_pose_graph/readme.md) | 상대 자세 제약을 이용해 그래프 전체의 카메라 자세를 조정한다. |
+| 04 | 비주얼 오도메트리 | [지역 특징점과 매칭](lessons/02_visual_odometry/04_local_features/readme.md) | 같은 영상 쌍에서 ORB와 SuperPoint로 대응점을 찾는다. |
+| 05 | 비주얼 오도메트리 | [Optical flow](lessons/02_visual_odometry/05_optical_flow/readme.md) | 연속 영상에서 코너를 추적하고 왕복 추적 오차로 대응점을 검증한다. |
+| 06 | 비주얼 오도메트리 | [에피폴라 기하](lessons/02_visual_odometry/06_epipolar_geometry/readme.md) | 2D 대응점으로 기본 행렬과 본질 행렬을 구하고 상대 자세를 복원한다. |
+| 07 | 비주얼 오도메트리 | [두 시점 삼각측량](lessons/02_visual_odometry/07_triangulation/readme.md) | 두 카메라의 자세와 대응점으로 3D 점을 복원한다. |
+| 08 | 비주얼 오도메트리 | [OpenGV 삼각측량](lessons/02_visual_odometry/08_opengv_triangulation/readme.md) | 정답 3D 좌표가 있는 합성 장면에서 두 삼각측량 방법을 비교한다. |
+| 09 | 비주얼 오도메트리 | [PnP와 카메라 자세](lessons/02_visual_odometry/09_pnp/readme.md) | 깊이 영상으로 얻은 3D 점과 다음 영상의 2D 점으로 카메라 자세를 구한다. |
+| 10 | 포인트 클라우드 | [포인트 클라우드 처리](lessons/03_point_clouds/10_point_cloud_processing/readme.md) | 점군을 필터링하고 법선을 추정한 뒤 군집을 분리한다. |
+| 11 | 포인트 클라우드 | [점군 정합](lessons/03_point_clouds/11_point_cloud_registration/readme.md) | 대응점 기반 SVD 정합과 반복 최근접점 정합(ICP)을 실험한다. |
+| 12 | SLAM 백엔드 | [번들 조정](lessons/04_slam_backend/12_bundle_adjustment/readme.md) | 여러 영상의 재투영 오차를 줄이도록 카메라와 3D 점을 함께 최적화한다. |
+| 13 | SLAM 백엔드 | [루프 폐쇄 후보 검색](lessons/04_slam_backend/13_loop_closure/readme.md) | 시각 단어 사전으로 과거 영상 중 같은 장소의 후보를 검색한다. |
+| 14 | SLAM 백엔드 | [포즈 그래프 최적화](lessons/04_slam_backend/14_pose_graph/readme.md) | 상대 자세 제약을 이용해 그래프 전체의 카메라 자세를 조정한다. |
 
 ## 폴더 구조
 
@@ -53,7 +54,7 @@ Xcode Command Line Tools가 필요하다. `xcode-select -p`에서 경로를 찾�
 각 실습의 `run.sh`는 샘플 데이터로 대표 예제를 실행한다. 실행 파일이나 입력을 직접 선택하려면 해당 실습의 `build/`에서 실행한다. 예를 들어 번들 조정은 다음과 같다.
 
 ```bash
-cd lessons/04_slam_backend/11_bundle_adjustment/build
+cd lessons/04_slam_backend/12_bundle_adjustment/build
 cmake ..
 ninja
 ./bundle_adjustment_ceres ../data/problem-16-22106-pre.txt
@@ -71,4 +72,4 @@ ninja
 
 ## Jetson / Ubuntu
 
-저장소 루트에서 `./build_3rdparty.sh`와 `./build.sh`를 차례로 실행한다. 07번 OpenGV 실습은 Linux 기본 빌드에서 제외되며, 이 실습을 개별 빌드하려면 OpenGV 설치가 필요하다.
+저장소 루트에서 `./build_3rdparty.sh`와 `./build.sh`를 차례로 실행한다. 08번 OpenGV 실습은 Linux 기본 빌드에서 제외되며, 이 실습을 개별 빌드하려면 OpenGV 설치가 필요하다.
