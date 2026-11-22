@@ -13,8 +13,9 @@ class OrbitView {
  protected:
   enum class WorldY { Up, Down };
   OrbitView(const std::string &title, size_t count, WorldY world_y = WorldY::Up,
-            cv::Rect scene = {12, 48, 762, 530})
-      : scene_(scene), title_(title), count_(count), world_y_(world_y) {}
+            cv::Rect scene = {12, 48, 762, 530}, cv::Point2d home_angles = {0.92, 0.52})
+      : scene_(scene), title_(title), count_(count), world_y_(world_y),
+        initial_yaw(home_angles.x), initial_pitch(home_angles.y) {}
   virtual ~OrbitView() = default;
   virtual cv::Mat render() const = 0;
   virtual bool handle_key(int) { return false; }
@@ -126,7 +127,7 @@ class OrbitView {
   const std::string title_;
   const size_t count_;
   const WorldY world_y_;
-  const double initial_yaw = 0.92, initial_pitch = 0.52;
+  const double initial_yaw, initial_pitch;
   cv::Vec3d pivot_;
   double yaw_ = initial_yaw, pitch_ = initial_pitch, zoom_ = 1.0, scale_ = 1.0;
   cv::Point last_cursor_;

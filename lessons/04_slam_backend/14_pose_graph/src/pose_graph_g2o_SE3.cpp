@@ -45,8 +45,9 @@ class PoseGraphHistory : public g2o::HyperGraphAction {
 };
 
 int main(int argc, char **argv) {
-  if (argc != 2) {
-    cout << "Usage: pose_graph_g2o_SE3 sphere.g2o" << endl;
+  const bool trajectory = argc == 3 && std::string(argv[2]) == "--trajectory";
+  if (argc != 2 && !trajectory) {
+    cout << "Usage: pose_graph_g2o_SE3 graph.g2o [--trajectory]" << endl;
     return 1;
   }
   ifstream fin(argv[1]);
@@ -77,16 +78,18 @@ int main(int argc, char **argv) {
       cerr << "Expected VERTEX_SE3:QUAT vertices.\n";
       return 1;
     }
-    index.emplace(pose->id(), poses.size());
     poses.push_back(pose);
-    if (pose->fixed()) anchors.push_back(poses.size() - 1);
+  }
+  sort(poses.begin(), poses.end(), [](const g2o::VertexSE3 *a, const g2o::VertexSE3 *b) {
+    return a->id() < b->id();
+  });
+  for (size_t i = 0; i < poses.size(); ++i) {
+    index.emplace(poses[i]->id(), i);
+    if (poses[i]->fixed()) anchors.push_back(i);
   }
   if (anchors.empty()) {
-    auto first = min_element(poses.begin(), poses.end(), [](const g2o::VertexSE3 *a, const g2o::VertexSE3 *b) {
-      return a->id() < b->id();
-    });
-    (*first)->setFixed(true);
-    anchors.push_back(index.at((*first)->id()));
+    poses.front()->setFixed(true);
+    anchors.push_back(0);
   }
   vector<PoseConstraint> edges;
   for (const auto *edge : optimizer.edges()) {
@@ -109,6 +112,6 @@ int main(int argc, char **argv) {
 
   cout << "saving optimization results ..." << endl;
   if (!optimizer.save("result.g2o")) return 1;
-  PoseGraphView view(history.states, edges, anchors);
+  PoseGraphView view(history.states, edges, anchors, trajectory);
   return view.show();
 }

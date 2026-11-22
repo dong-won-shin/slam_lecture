@@ -20,7 +20,7 @@ set(reg "${PROJECT_SOURCE_DIR}/${point_cloud_registration_dir}/data")
 example_test(iterative_form_registration "${reg}/room_scan1.pcd" "${reg}/room_scan2.pcd")
 example_test(closed_form_registration "${reg}/1.png" "${reg}/2.png" "${reg}/1_depth.png" "${reg}/2_depth.png")
 example_test(bundle_adjustment_ceres "${PROJECT_SOURCE_DIR}/${bundle_adjustment_dir}/data/problem-16-22106-pre.txt")
-example_test(pose_graph_g2o_SE3 "${PROJECT_SOURCE_DIR}/${pose_graph_dir}/data/sphere.g2o")
+example_test(pose_graph_g2o_SE3 "${PROJECT_SOURCE_DIR}/${pose_graph_dir}/data/kitti_00.g2o" --trajectory)
 
 set(two_view "${PROJECT_SOURCE_DIR}/${epipolar_geometry_dir}/data")
 example_test(pose_estimation_2d2d "${two_view}/1.png" "${two_view}/2.png")
