@@ -40,12 +40,6 @@ flowchart LR
 
 07번 두 시점 삼각측량은 카메라 좌표계에 맞춰 +Y축을 화면 아래쪽에 표시한다. 다른 3D 뷰어는 +Y축을 화면 위쪽에 표시한다.
 
-### 차량 주행 궤적 실행 영상
-
-![KITTI 예제의 포즈 그래프 최적화를 초기 상태부터 단계별로 재생한 화면](lessons/04_slam_backend/14_pose_graph/media/preview.gif)
-
-왼쪽은 초기 궤적이고 오른쪽은 g2o의 각 반복에서 얻은 궤적이다. 각 실습의 README에서도 해당 예제의 실행 장면을 볼 수 있다. [주행 궤적 MP4](lessons/04_slam_backend/14_pose_graph/media/demo.mp4)
-
 ## 폴더 구조
 
 ```text
