@@ -38,8 +38,6 @@ flowchart LR
 | 13 | SLAM 백엔드 | [루프 폐쇄 후보 검색](lessons/04_slam_backend/13_loop_closure/readme.md) | KITTI 주행 사진에서 같은 도로의 재방문 후보를 찾고 DBoW3 검색 순위와 ORB 대응점을 비교한다. | [MP4](lessons/04_slam_backend/13_loop_closure/media/demo.mp4) |
 | 14 | SLAM 백엔드 | [포즈 그래프 최적화](lessons/04_slam_backend/14_pose_graph/readme.md) | KITTI 차량 주행 궤적에 재방문 제약을 적용하고 초기 경로와 최적화 경로를 3D로 비교한다. | [MP4](lessons/04_slam_backend/14_pose_graph/media/demo.mp4) |
 
-07번 두 시점 삼각측량은 카메라 좌표계에 맞춰 +Y축을 화면 아래쪽에 표시한다. 다른 3D 뷰어는 +Y축을 화면 위쪽에 표시한다.
-
 ## 폴더 구조
 
 ```text
