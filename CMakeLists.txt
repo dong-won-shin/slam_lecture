@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 find_package(Eigen3 3.4 REQUIRED NO_MODULE)
-find_package(OpenCV 4 REQUIRED COMPONENTS core imgproc imgcodecs features2d calib3d highgui)
+find_package(OpenCV 4 REQUIRED COMPONENTS core imgproc imgcodecs features2d calib3d highgui video)
 find_package(Ceres 2.2 REQUIRED)
 find_package(PCL REQUIRED COMPONENTS io filters features segmentation registration visualization)
 
@@ -66,11 +66,12 @@ lecture_example(kalman-test ${kalman_filter_dir} kalman.cpp kalman-test.cpp)
 target_link_libraries(kalman-test PRIVATE Eigen3::Eigen)
 
 # 02. Visual odometry
-foreach(name IN ITEMS orb_cv orb_self)
+foreach(name IN ITEMS orb_cv orb_self optical_flow)
   lecture_example(${name} ${local_features_dir} ${name}.cpp)
   target_link_libraries(${name} PRIVATE ${OpenCV_LIBS})
 endforeach()
 target_include_directories(orb_cv PRIVATE common)
+target_include_directories(optical_flow PRIVATE common)
 lecture_example(pose_estimation_2d2d ${epipolar_geometry_dir} pose_estimation_2d2d.cpp)
 target_link_libraries(pose_estimation_2d2d PRIVATE ${OpenCV_LIBS})
 lecture_example(triangulation ${triangulation_dir} triangulation.cpp)
