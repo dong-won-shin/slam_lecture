@@ -2,6 +2,8 @@
 import argparse
 import math
 import os
+import shutil
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -17,6 +19,22 @@ from flownets_model import estimate_flow, load_model
 
 LESSON = Path(__file__).resolve().parents[1]
 TITLE = "FlowNetS optical flow"
+
+
+def has_display():
+    if os.environ.get("SLAM_HEADLESS"):
+        return False
+    if sys.platform.startswith("linux"):
+        return bool(os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY"))
+    return True
+
+
+def has_opencv_gui():
+    for line in cv2.getBuildInformation().splitlines():
+        name, _, backend = line.partition(":")
+        if name.strip() == "GUI":
+            return backend.strip() != "NONE"
+    return True
 
 
 def overview(previous, field, label):
@@ -56,12 +74,13 @@ def overview(previous, field, label):
     return canvas
 
 
-def play_video(path, output, model, device, display):
+def play_video(path, output, model, device, display, player):
     if output and (output.resolve() == path.resolve() or
                    (output.exists() and path.exists() and output.samefile(path))):
         raise ValueError("Choose an output file different from the input video.")
     capture = cv2.VideoCapture(str(path))
     writer = None
+    preview = None
     count = 0
     try:
         ok, previous = capture.read()
@@ -87,6 +106,22 @@ def play_video(path, output, model, device, display):
                         raise OSError(f"Could not create video: {output}")
                 writer.write(canvas)
             count += 1
+            if player:
+                if preview is None:
+                    height, width = canvas.shape[:2]
+                    preview = subprocess.Popen(
+                        [player, "-loglevel", "error", "-autoexit", "-window_title", TITLE,
+                         "-probesize", "32", "-analyzeduration", "0",
+                         "-f", "rawvideo", "-pixel_format", "bgr24",
+                         "-video_size", f"{width}x{height}", "-framerate", str(fps), "-i", "pipe:0"],
+                        stdin=subprocess.PIPE,
+                    )
+                try:
+                    preview.stdin.write(canvas.tobytes())
+                except BrokenPipeError:
+                    if not output:
+                        break
+                    player = None
             if display:
                 cv2.imshow(TITLE, canvas)
                 delay = max(1, round(1000 * (1 / fps - (time.monotonic() - start))))
@@ -101,6 +136,12 @@ def play_video(path, output, model, device, display):
         capture.release()
         if writer is not None:
             writer.release()
+        if preview is not None:
+            try:
+                preview.stdin.close()
+            except BrokenPipeError:
+                pass
+            preview.wait()
 
 
 def main():
@@ -119,12 +160,19 @@ def main():
             device = "cuda"
         elif torch.backends.mps.is_available():
             device = "mps"
-    display = not os.environ.get("SLAM_HEADLESS")
+    screen = has_display()
+    display = screen and has_opencv_gui()
+    player = shutil.which("ffplay") if args.video and screen and not display else None
     print(f"FlowNetS / {device}", flush=True)
     try:
         model = load_model(LESSON / "build/model-cache", device)
         if args.video:
-            play_video(args.video, args.output, model, device, display)
+            output = args.output
+            if not display and not player and output is None:
+                output = LESSON / "build/flownet-result.mp4"
+            play_video(args.video, output, model, device, display, player)
+            if output:
+                print(f"Saved {output}")
         else:
             paths = args.images or [LESSON / "data/1.png", LESSON / "data/2.png"]
             if args.output and args.output.exists() and any(path.exists() and path.samefile(args.output) for path in paths):
@@ -140,6 +188,7 @@ def main():
                 output = args.output or LESSON / "build/flownet_flow.png"
                 if not cv2.imwrite(str(output), canvas):
                     raise OSError(f"Could not write {output}")
+                print(f"Saved {output}")
             if display:
                 cv2.imshow(TITLE, canvas)
                 cv2.waitKey(0)
@@ -147,7 +196,10 @@ def main():
         parser.exit(1, f"FlowNetS: {exc}\n")
     finally:
         if display:
-            cv2.destroyAllWindows()
+            try:
+                cv2.destroyAllWindows()
+            except cv2.error:
+                pass
 
 
 if __name__ == "__main__":

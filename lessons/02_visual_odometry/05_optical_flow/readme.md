@@ -72,7 +72,7 @@ SLAM_HEADLESS=1 ./run.sh lk --video --output lk_result.mp4
 SLAM_HEADLESS=1 ./run.sh flownet --video --output build/flownet-result.mp4
 ```
 
-`./run.sh flownet`은 기본 이미지 두 장을 비교한다. 창 없이 실행하면 `build/flownet_flow.png`에 결과를 저장한다. 영상 입력에는 `--video ~/Movies/walk.mp4`처럼 경로를 줄 수 있다. MP4의 재생 속도는 입력 영상의 프레임률을 따른다.
+`./run.sh flownet`은 기본 이미지 두 장을 비교한다. 영상은 OpenCV 창에서 재생하며, OpenCV에 GUI 지원이 없는 데스크톱에서는 `ffplay`가 설치되어 있으면 결과를 실시간으로 재생한다. 창 없이 실행하면 이미지 결과는 `build/flownet_flow.png`, 영상 결과는 `build/flownet-result.mp4`에 저장한다. `--output`으로 저장 경로를 지정할 수 있다. 영상 입력에는 `--video ~/Movies/walk.mp4`처럼 경로를 줄 수 있다. MP4의 재생 속도는 입력 영상의 프레임률을 따른다.
 
 ## 정지 이미지 두 장으로 비교하기
 
