@@ -7,7 +7,7 @@ endif()
 cmake_minimum_required(VERSION 3.1)
 project(optical_flow LANGUAGES CXX)
 
-find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs highgui video OPTIONAL_COMPONENTS optflow)
+find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs highgui video videoio OPTIONAL_COMPONENTS optflow)
 set(flow_examples optical_flow)
 if(OpenCV_VERSION VERSION_LESS 4 AND NOT TARGET opencv_optflow)
   message(STATUS "Install OpenCV 3 contrib optflow to build the DIS example")

@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 find_package(Eigen3 3.4 REQUIRED NO_MODULE)
-find_package(OpenCV 4 REQUIRED COMPONENTS core imgproc imgcodecs features2d calib3d highgui video)
+find_package(OpenCV 4 REQUIRED COMPONENTS core imgproc imgcodecs features2d calib3d highgui video videoio)
 find_package(Ceres 2.2 REQUIRED)
 find_package(PCL REQUIRED COMPONENTS io filters features segmentation registration visualization)
 
