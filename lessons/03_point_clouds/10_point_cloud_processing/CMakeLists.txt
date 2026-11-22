@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 2.8)
 project(3d_point_cloud_processing)
 
 set(CMAKE_BUILD_TYPE "Release")
-set(CMAKE_CXX_FLAGS "-std=c++11 -O2 ${SSE_FLAGS}")
+set(CMAKE_CXX_FLAGS "-std=c++14 -O2 ${SSE_FLAGS}")
 
 find_package(PCL REQUIRED)
 

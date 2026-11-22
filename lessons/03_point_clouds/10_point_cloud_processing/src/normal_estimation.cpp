@@ -73,6 +73,6 @@ int main(int argc, char **argv) {
   vtkNew<vtkCallbackCommand> y_up;
   y_up->SetCallback(keep_y_up);
   auto *renderer = viewer.getRendererCollection()->GetFirstRenderer();
-  renderer->AddObserver(vtkCommand::StartEvent, y_up);
+  renderer->AddObserver(vtkCommand::StartEvent, y_up.GetPointer());
   viewer.spin();
 }

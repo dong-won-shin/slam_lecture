@@ -9,7 +9,7 @@ project(3d_point_cloud_registration)
 
 set(CMAKE_BUILD_TYPE "Release")
 add_definitions("-DENABLE_SSE")
-set(CMAKE_CXX_FLAGS "-std=c++11 -O2 ${SSE_FLAGS}")
+set(CMAKE_CXX_FLAGS "-std=c++14 -O2 ${SSE_FLAGS}")
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 find_package(OpenCV REQUIRED)
