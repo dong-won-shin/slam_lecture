@@ -17,7 +17,13 @@ struct LoopFrame {
 class LoopClosureView {
  public:
   explicit LoopClosureView(const std::vector<LoopFrame> &frames)
-      : frames_(frames), query_(frames.size() - 1) {}
+      : frames_(frames), query_(frames.size() - 1) {
+    // Keep a stable layout when switching queries, including panoramic driving images.
+    for (const auto &frame : frames) {
+      const auto &im = frame.image;
+      photo_height_ = std::max(photo_height_, std::min(405, cvRound(554.0 * im.rows / im.cols)));
+    }
+  }
 
   int show() {
     if (std::getenv("SLAM_HEADLESS")) {
@@ -26,7 +32,7 @@ class LoopClosureView {
       return cv::imwrite("loop_closure_matches.png", render()) ? 0 : 1;
     }
     cv::namedWindow(title_, cv::WINDOW_NORMAL | cv::WINDOW_KEEPRATIO | cv::WINDOW_GUI_NORMAL);
-    cv::resizeWindow(title_, 1160, 660);
+    cv::resizeWindow(title_, canvas_size());
     cv::setMouseCallback(title_, on_click, this);
     cv::imshow(title_, render());
     while (true) {
@@ -50,10 +56,12 @@ class LoopClosureView {
   const std::string title_ = "Loop closure candidates";
   const std::vector<LoopFrame> &frames_;
   size_t query_, rank_ = 0;
+  int photo_height_ = 1;
   bool show_matches_ = false;
   const cv::Scalar ink_{235, 238, 242}, muted_{182, 178, 168}, accent_{105, 211, 247};
 
-  static cv::Rect card(size_t rank) { return {16 + 380 * int(rank), 494, 370, 114}; }
+  cv::Rect card(size_t rank) const { return {16 + 380 * int(rank), photo_height_ + 89, 370, 145}; }
+  cv::Size canvas_size() const { return {1160, card(0).br().y + 52}; }
 
   static void label(cv::Mat &img, const std::string &s, cv::Point at,
                     double scale, cv::Scalar color) {
@@ -90,36 +98,36 @@ class LoopClosureView {
   }
 
   cv::Mat render() const {
-    cv::Mat canvas(660, 1160, CV_8UC3, cv::Scalar(33, 29, 25));
+    cv::Mat canvas(canvas_size(), CV_8UC3, cv::Scalar(33, 29, 25));
     const auto &query = frames_[query_];
     label(canvas, cv::format("Query   /   %d.png", int(query_ + 1)), {19, 33}, 0.79, ink_);
-    auto left = lecture::draw_image(canvas, {16, 46, 554, 405}, query.image);
+    auto left = lecture::draw_image(canvas, {16, 46, 554, photo_height_}, query.image);
     std::string overlay;
     if (!query.candidates.empty()) {
       const auto &result = query.candidates[rank_];
       const auto &candidate = frames_[result.Id];
       label(canvas, cv::format("Candidate   /   %u.png", result.Id + 1), {591, 33}, 0.79, ink_);
-      auto right = lecture::draw_image(canvas, {590, 46, 554, 405}, candidate.image);
+      auto right = lecture::draw_image(canvas, {590, 46, 554, photo_height_}, candidate.image);
       if (show_matches_) {
         const int count = draw_matches(canvas, query, candidate, left, right);
         overlay = cv::format("%d ORB matches shown", count);
       }
     } else {
-      label(canvas, "No earlier candidate", {717, 250}, 0.76, muted_);
+      label(canvas, "No earlier candidate", {717, 46 + photo_height_ / 2}, 0.76, muted_);
     }
-    label(canvas, "Earlier images ranked by DBoW3", {19, 480}, 0.62, ink_);
-    label(canvas, overlay, {885, 480}, 0.55, accent_);
+    label(canvas, "Earlier images ranked by DBoW3", {19, photo_height_ + 75}, 0.62, ink_);
+    label(canvas, overlay, {885, photo_height_ + 75}, 0.55, accent_);
     for (size_t i = 0; i < query.candidates.size(); ++i) {
       const auto &r = query.candidates[i];
       const auto box = card(i);
       canvas(box).setTo(cv::Scalar(52, 46, 40));
-      lecture::draw_image(canvas, {box.x + 5, box.y + 5, 142, 104}, frames_[r.Id].image);
-      label(canvas, cv::format("#%d   %u.png", int(i + 1), r.Id + 1), box.tl() + cv::Point(159, 46), 0.69, ink_);
-      label(canvas, cv::format("Score   %.4f", r.Score), box.tl() + cv::Point(159, 78), 0.54, muted_);
+      lecture::draw_image(canvas, {box.x + 5, box.y + 5, box.width - 10, 104}, frames_[r.Id].image);
+      label(canvas, cv::format("#%d   %u.png", int(i + 1), r.Id + 1), box.tl() + cv::Point(12, 134), 0.62, ink_);
+      label(canvas, cv::format("Score   %.4f", r.Score), box.tl() + cv::Point(206, 134), 0.54, muted_);
       if (i == rank_) cv::rectangle(canvas, box, accent_, 2, cv::LINE_AA);
     }
     label(canvas, "N / P   change query       1 - 3 or click   select candidate       M   toggle matches       Q   close",
-          {19, 641}, 0.55, muted_);
+          {19, canvas.rows - 19}, 0.55, muted_);
     return canvas;
   }
 
@@ -127,7 +135,7 @@ class LoopClosureView {
     if (event != cv::EVENT_LBUTTONDOWN) return;
     auto &view = *static_cast<LoopClosureView *>(context);
     for (size_t i = 0; i < view.frames_[view.query_].candidates.size(); ++i) {
-      if (card(i).contains(cv::Point(x, y))) {
+      if (view.card(i).contains(cv::Point(x, y))) {
         view.rank_ = i;
         cv::imshow(view.title_, view.render());
         return;
