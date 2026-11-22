@@ -1,2 +1,3 @@
+# Build directories at every level, including lessons and third-party libraries.
 build/
 __pycache__/
