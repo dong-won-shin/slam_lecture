@@ -18,7 +18,7 @@ class TriangulationView : public lecture::OrbitView {
  public:
   TriangulationView(const cv::Mat &first, const cv::Mat &second, const std::vector<Landmark> &points,
                     const cv::Matx33d &K, const cv::Matx33d &R, const cv::Vec3d &t)
-      : OrbitView("Two-view triangulation", points.size()), first_(first.clone()), second_(second.clone()),
+      : OrbitView("Two-view triangulation", points.size(), WorldY::Down), first_(first.clone()), second_(second.clone()),
         points_(points), invK_(K.inv()), camera2_rotation_(R.t()), camera2_center_(-(R.t() * t)) {
     std::vector<cv::Vec3d> positions{cv::Vec3d(0, 0, 0), camera2_center_};
     for (const auto &p : points_) {
