@@ -8,6 +8,8 @@
 ./lessons/02_visual_odometry/08_opengv_triangulation/run.sh --seed 20
 ```
 
+![OpenGV 두 추정점과 정답을 두 관측 광선 및 정답 주변의 확대도로 비교한 화면](figures/opengv-estimates.jpg)
+
 왼쪽의 C1과 C2는 카메라 중심이다. 두 중심에서 나오는 선은 선택한 점의 관측 광선이다. 오른쪽 위에는 첫 카메라 좌표계에서의 정답과 추정 좌표, 정답까지의 3D 유클리드 거리가 표시된다. 거리는 합성 장면의 좌표 단위다.
 
 | 표시 | 의미 |

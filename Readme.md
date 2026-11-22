@@ -4,6 +4,23 @@
 
 ## 강의 순서
 
+다음 그림은 실습에서 다루는 관측과 추정값이 SLAM에서 어떻게 연결되는지 보여준다. 예를 들어 07번은 두 영상으로부터 3D 점을 구하고, 12번은 그 점과 카메라 자세를 함께 조정한다.
+
+```mermaid
+flowchart LR
+    image["카메라 영상"] --> matches["영상 대응점"]
+    matches --> tri["삼각측량 · 3D 점"]
+    matches --> pose["PnP · 카메라 자세"]
+    tri --> pose
+    tri --> ba["번들 조정"]
+    pose --> ba
+    scans["LiDAR 점군"] --> icp["점군 정합 · 상대 자세"]
+    icp --> graph["포즈 그래프 최적화"]
+    pose --> graph
+    image --> revisit["재방문 후보 검색과 검증"]
+    revisit --> graph
+```
+
 | 실습 | 단원 | 주제와 실행 방법 | 실습 목표 |
 |---|---|---|---|
 | 01 | 기초 | [센서 좌표계와 카메라 투영](lessons/01_foundations/01_camera_projection/readme.md) | LiDAR 점을 카메라 좌표계로 옮긴 뒤 영상에 투영한다. |
@@ -38,6 +55,20 @@ scripts/                환경 설치 스크립트
 ```
 
 각 실습의 `src/`에는 코드가 있고, 파일 입력이 필요한 실습에는 `data/`가 있다. 실행 파일은 해당 실습의 `build/`에 생성된다. 저장소 루트의 `build/`는 공용 의존성과 컴파일 캐시에 사용한다.
+
+### macOS에서 한 실습이 빌드되는 경로
+
+```mermaid
+flowchart TD
+    packages["build/deps · CMake, Ninja, OpenCV, Ceres, PCL"] --> shared["build/macos · 공용 CMake 빌드"]
+    source["3rdparty/g2o · 강의에서 사용하는 소스"] --> shared
+    shared --> g2o["build/macos/lib · g2o 정적 라이브러리"]
+    g2o --> pose["14_pose_graph/build · 포즈 그래프 실행 파일"]
+    shared --> pose
+    pose --> result["run.sh · 주행 궤적 창과 result.g2o"]
+```
+
+포즈 그래프를 예로 들면, 실습 폴더에서 실행한 `ninja`가 공용 빌드를 호출한다. 공용 빌드는 g2o를 컴파일하고 실습 실행 파일에 정적으로 링크한다. 실행할 때는 `build/deps/lib`의 OpenCV를 불러와 주행 궤적을 그린다.
 
 ## macOS에서 시작하기
 
