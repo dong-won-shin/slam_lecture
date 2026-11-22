@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
@@ -8,17 +7,8 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/video/tracking.hpp>
 
+#include "flow_stats.hpp"
 #include "image_panel.hpp"
-
-namespace {
-
-float median(std::vector<float> values) {
-  std::sort(values.begin(), values.end());
-  const auto n = values.size();
-  return (values[(n - 1) / 2] + values[n / 2]) * 0.5f;
-}
-
-} // namespace
 
 int main(int argc, char **argv) {
   if (argc != 3) {
@@ -79,7 +69,7 @@ int main(int argc, char **argv) {
 
   std::cout << "Detected: " << corners.size() << "\nTracked: " << dx.size()
             << std::fixed << std::setprecision(2)
-            << "\nMedian flow (dx, dy) in pixels: " << median(dx) << ", " << median(dy) << '\n';
+            << "\nMedian flow (dx, dy) in pixels: " << flow::median(dx) << ", " << flow::median(dy) << '\n';
   cv::Mat overview(424, 1040, CV_8UC3, cv::Scalar(29, 26, 24));
   lecture::draw_panel(overview, {12, 8, 502, 407}, first,
                       "Frame 1 / detected corners (" + std::to_string(corners.size()) + ")");
@@ -88,6 +78,6 @@ int main(int argc, char **argv) {
   if (std::getenv("SLAM_HEADLESS")) {
     return cv::imwrite("optical_flow.png", overview) ? 0 : 1;
   }
-  lecture::show_result("Sparse optical flow", overview);
+  lecture::show_result("Pyramidal LK optical flow", overview);
   return 0;
 }

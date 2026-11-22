@@ -2,4 +2,8 @@
 set -eu
 cd "$(dirname "$0")/build"
 
-./optical_flow ../data/1.png ../data/2.png
+case "${1:-lk}" in
+  lk)  exec ./optical_flow ../data/1.png ../data/2.png ;;
+  dis) exec ./dis_optical_flow ../data/1.png ../data/2.png ;;
+  *)   echo "Usage: $0 [lk|dis]" >&2; exit 1 ;;
+esac
