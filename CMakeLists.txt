@@ -108,6 +108,7 @@ target_include_directories(bundle_adjustment_ceres PRIVATE common ${bundle_adjus
 target_link_libraries(bundle_adjustment_ceres PRIVATE Ceres::ceres ${OpenCV_LIBS})
 lecture_example(feature_training ${loop_closure_dir} feature_training.cpp)
 lecture_example(loop_closure ${loop_closure_dir} loop_closure.cpp)
+target_include_directories(loop_closure PRIVATE common)
 lecture_example(gen_vocab ${loop_closure_dir} gen_vocab_large.cpp)
 foreach(name IN ITEMS feature_training loop_closure gen_vocab)
   target_link_libraries(${name} PRIVATE lecture_dbow3)

@@ -1,0 +1,137 @@
+#pragma once
+
+#include <algorithm>
+#include <cstdlib>
+#include <vector>
+#include "DBoW3/DBoW3.h"
+#include <opencv2/features2d.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include "image_panel.hpp"
+
+struct LoopFrame {
+  cv::Mat image, descriptors;
+  std::vector<cv::KeyPoint> keypoints;
+  DBoW3::QueryResults candidates;
+};
+
+class LoopClosureView {
+ public:
+  explicit LoopClosureView(const std::vector<LoopFrame> &frames)
+      : frames_(frames), query_(frames.size() - 1) {}
+
+  int show() {
+    if (std::getenv("SLAM_HEADLESS")) {
+      if (!cv::imwrite("loop_closure.png", render())) return 1;
+      show_matches_ = true;
+      return cv::imwrite("loop_closure_matches.png", render()) ? 0 : 1;
+    }
+    cv::namedWindow(title_, cv::WINDOW_NORMAL | cv::WINDOW_KEEPRATIO | cv::WINDOW_GUI_NORMAL);
+    cv::resizeWindow(title_, 1160, 660);
+    cv::setMouseCallback(title_, on_click, this);
+    cv::imshow(title_, render());
+    while (true) {
+      const int key = cv::waitKey(50);
+      if (key == 'q' || key == 27 || cv::getWindowProperty(title_, cv::WND_PROP_VISIBLE) == 0) break;
+      if (key == 'n' || key == 'p') {
+        query_ = (query_ + (key == 'n' ? 1 : frames_.size() - 1)) % frames_.size();
+        rank_ = 0;
+      } else if (key >= '1' && key <= '3' && size_t(key - '1') < frames_[query_].candidates.size()) {
+        rank_ = key - '1';
+      } else if (key == 'm') {
+        show_matches_ = !show_matches_;
+      } else continue;
+      cv::imshow(title_, render());
+    }
+    cv::destroyAllWindows();
+    return 0;
+  }
+
+ private:
+  const std::string title_ = "Loop closure candidates";
+  const std::vector<LoopFrame> &frames_;
+  size_t query_, rank_ = 0;
+  bool show_matches_ = false;
+  const cv::Scalar ink_{235, 238, 242}, muted_{182, 178, 168}, accent_{105, 211, 247};
+
+  static cv::Rect card(size_t rank) { return {16 + 380 * int(rank), 494, 370, 114}; }
+
+  static void label(cv::Mat &img, const std::string &s, cv::Point at,
+                    double scale, cv::Scalar color) {
+    cv::putText(img, s, at, cv::FONT_HERSHEY_SIMPLEX, scale, color, 1, cv::LINE_AA);
+  }
+
+  static cv::Point pixel_on_canvas(cv::Point2f pt, cv::Size size, cv::Rect area) {
+    return {area.x + cvRound((pt.x + 0.5) * area.width / size.width - 0.5),
+            area.y + cvRound((pt.y + 0.5) * area.height / size.height - 0.5)};
+  }
+
+  static int draw_matches(cv::Mat &canvas, const LoopFrame &a, const LoopFrame &b,
+                          cv::Rect left, cv::Rect right) {
+    if (a.descriptors.empty() || b.descriptors.rows < 2) return 0;
+    std::vector<std::vector<cv::DMatch>> neighbors;
+    cv::BFMatcher(cv::NORM_HAMMING).knnMatch(a.descriptors, b.descriptors, neighbors, 2);
+    std::vector<cv::DMatch> matches;
+    for (const auto &pair : neighbors)
+      if (pair.size() == 2 && pair[0].distance < 0.75f * pair[1].distance) matches.push_back(pair[0]);
+    std::sort(matches.begin(), matches.end());
+    if (matches.size() > 20) matches.resize(20);
+    const cv::Scalar colors[] = {{76, 222, 255}, {244, 218, 95}, {184, 152, 255}};
+    for (size_t i = 0; i < matches.size(); ++i) {
+      const auto &m = matches[i];
+      auto p = pixel_on_canvas(a.keypoints[m.queryIdx].pt, a.image.size(), left);
+      auto q = pixel_on_canvas(b.keypoints[m.trainIdx].pt, b.image.size(), right);
+      auto color = colors[i % 3];
+      cv::line(canvas, p, q, {35, 34, 29}, 3, cv::LINE_AA);
+      cv::line(canvas, p, q, color, 1, cv::LINE_AA);
+      cv::circle(canvas, p, 4, color, 2, cv::LINE_AA);
+      cv::circle(canvas, q, 4, color, 2, cv::LINE_AA);
+    }
+    return int(matches.size());
+  }
+
+  cv::Mat render() const {
+    cv::Mat canvas(660, 1160, CV_8UC3, cv::Scalar(33, 29, 25));
+    const auto &query = frames_[query_];
+    label(canvas, cv::format("Query   /   %d.png", int(query_ + 1)), {19, 33}, 0.79, ink_);
+    auto left = lecture::draw_image(canvas, {16, 46, 554, 405}, query.image);
+    std::string overlay;
+    if (!query.candidates.empty()) {
+      const auto &result = query.candidates[rank_];
+      const auto &candidate = frames_[result.Id];
+      label(canvas, cv::format("Candidate   /   %u.png", result.Id + 1), {591, 33}, 0.79, ink_);
+      auto right = lecture::draw_image(canvas, {590, 46, 554, 405}, candidate.image);
+      if (show_matches_) {
+        const int count = draw_matches(canvas, query, candidate, left, right);
+        overlay = cv::format("%d ORB matches shown", count);
+      }
+    } else {
+      label(canvas, "No earlier candidate", {717, 250}, 0.76, muted_);
+    }
+    label(canvas, "Earlier images ranked by DBoW3", {19, 480}, 0.62, ink_);
+    label(canvas, overlay, {885, 480}, 0.55, accent_);
+    for (size_t i = 0; i < query.candidates.size(); ++i) {
+      const auto &r = query.candidates[i];
+      const auto box = card(i);
+      canvas(box).setTo(cv::Scalar(52, 46, 40));
+      lecture::draw_image(canvas, {box.x + 5, box.y + 5, 142, 104}, frames_[r.Id].image);
+      label(canvas, cv::format("#%d   %u.png", int(i + 1), r.Id + 1), box.tl() + cv::Point(159, 46), 0.69, ink_);
+      label(canvas, cv::format("Score   %.4f", r.Score), box.tl() + cv::Point(159, 78), 0.54, muted_);
+      if (i == rank_) cv::rectangle(canvas, box, accent_, 2, cv::LINE_AA);
+    }
+    label(canvas, "N / P   change query       1 - 3 or click   select candidate       M   toggle matches       Q   close",
+          {19, 641}, 0.55, muted_);
+    return canvas;
+  }
+
+  static void on_click(int event, int x, int y, int, void *context) {
+    if (event != cv::EVENT_LBUTTONDOWN) return;
+    auto &view = *static_cast<LoopClosureView *>(context);
+    for (size_t i = 0; i < view.frames_[view.query_].candidates.size(); ++i) {
+      if (card(i).contains(cv::Point(x, y))) {
+        view.rank_ = i;
+        cv::imshow(view.title_, view.render());
+        return;
+      }
+    }
+  }
+};

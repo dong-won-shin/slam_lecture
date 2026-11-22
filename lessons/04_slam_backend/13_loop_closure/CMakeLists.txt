@@ -12,7 +12,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -O3")
 
 # opencv 
 find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories(${OpenCV_INCLUDE_DIRS} "${CMAKE_CURRENT_SOURCE_DIR}/../../../common")
 
 # dbow3 
 # dbow3 is a simple lib so I assume you installed it in default directory 

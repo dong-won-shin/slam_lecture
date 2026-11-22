@@ -18,7 +18,7 @@
 | 10 | 포인트 클라우드 | [포인트 클라우드 처리](lessons/03_point_clouds/10_point_cloud_processing/readme.md) | 점군을 필터링하고 법선을 추정한 뒤 군집을 분리한다. |
 | 11 | 포인트 클라우드 | [점군 정합](lessons/03_point_clouds/11_point_cloud_registration/readme.md) | 대응점 기반 SVD 정합과 반복 최근접점 정합(ICP)을 실험한다. |
 | 12 | SLAM 백엔드 | [번들 조정](lessons/04_slam_backend/12_bundle_adjustment/readme.md) | Ceres가 카메라와 3D 점을 함께 조정하는 과정을 단계별로 재생하고 재투영 오차를 확인한다. |
-| 13 | SLAM 백엔드 | [루프 폐쇄 후보 검색](lessons/04_slam_backend/13_loop_closure/readme.md) | 시각 단어 사전으로 과거 영상 중 같은 장소의 후보를 검색한다. |
+| 13 | SLAM 백엔드 | [루프 폐쇄 후보 검색](lessons/04_slam_backend/13_loop_closure/readme.md) | 질의 사진과 과거 후보를 나란히 놓고 DBoW3 검색 순위와 ORB 대응점을 확인한다. |
 | 14 | SLAM 백엔드 | [포즈 그래프 최적화](lessons/04_slam_backend/14_pose_graph/readme.md) | 상대 자세 제약을 이용해 그래프 전체의 카메라 자세를 조정한다. |
 
 07번 두 시점 삼각측량은 카메라 좌표계에 맞춰 +Y축을 화면 아래쪽에 표시한다. 다른 3D 뷰어는 +Y축을 화면 위쪽에 표시한다.
