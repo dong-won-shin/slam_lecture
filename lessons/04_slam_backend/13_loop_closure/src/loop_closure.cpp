@@ -1,6 +1,7 @@
 #include <iostream>
 #include <opencv2/calib3d.hpp>
 #include "loop_closure_view.hpp"
+#include "numbered_images.hpp"
 
 static LoopCandidate verify_candidate(const LoopFrame &query, const LoopFrame &past,
                                       const DBoW3::Result &retrieval) {
@@ -40,7 +41,9 @@ int main(int argc, char **argv) {
     std::cerr << "Usage: loop_closure vocabulary image_directory [query_number]\n";
     return 1;
   }
-  std::vector<LoopFrame> frames(10);
+  std::vector<cv::Mat> images;
+  if (!load_numbered_images(argv[2], images)) return 1;
+  std::vector<LoopFrame> frames(images.size());
   size_t initial_query = frames.size() - 1;
   if (argc == 4) {
     char *end = nullptr;
@@ -71,12 +74,7 @@ int main(int argc, char **argv) {
   auto orb = cv::ORB::create();
   for (size_t i = 0; i < frames.size(); ++i) {
     auto &frame = frames[i];
-    const std::string path = std::string(argv[2]) + "/" + std::to_string(i + 1) + ".png";
-    frame.image = cv::imread(path);
-    if (frame.image.empty()) {
-      std::cerr << "Could not read " << path << '\n';
-      return 1;
-    }
+    frame.image = images[i];
     orb->detectAndCompute(frame.image, cv::noArray(), frame.keypoints, frame.descriptors);
     vocab.transform(frame.descriptors, words[i]);
     // Query before inserting this frame, as in an online place-recognition system.

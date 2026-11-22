@@ -1,3 +1,4 @@
+#include "numbered_images.hpp"
 #include "DBoW3/DBoW3.h"
 #include <iostream>
 #include <opencv2/core/core.hpp>
@@ -10,14 +11,13 @@ using namespace cv;
 using namespace std;
 
 int main(int argc, char **argv) {
-  // read the image
+  if (argc != 2) {
+    cerr << "Usage: feature_training image_directory\n";
+    return 1;
+  }
   cout << "reading images... " << endl;
   vector<Mat> images;
-  for (int i = 0; i < 10; i++) {
-    // string path = "./data/"+to_string(i+1)+".png";
-    string path = string(argv[1]) + to_string(i + 1) + ".png";
-    images.push_back(imread(path));
-  }
+  if (!load_numbered_images(argv[1], images)) return 1;
   // detect ORB features
   cout << "detecting ORB features ... " << endl;
   Ptr<Feature2D> detector = ORB::create();

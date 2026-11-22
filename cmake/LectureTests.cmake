@@ -43,9 +43,13 @@ endforeach()
 
 set(loop "${PROJECT_SOURCE_DIR}/${loop_closure_dir}/data")
 example_test(feature_training "${loop}/")
-example_test(loop_closure "${loop}/vocab_larger.yml.gz" "${loop}/")
-set_tests_properties(loop_closure PROPERTIES FAIL_REGULAR_EXPRESSION
-  "Verified loop for 2[.]png: [0-9];Verified loop for 10[.]png: (none|[2-9][.]png)")
+set(loop_output "${CMAKE_BINARY_DIR}/results/loop_closure")
+file(MAKE_DIRECTORY "${loop_output}")
+add_test(NAME loop_closure COMMAND "${CMAKE_COMMAND}"
+  "-Dprogram=$<TARGET_FILE:loop_closure>" "-Ddata=${loop}"
+  -P "${CMAKE_CURRENT_LIST_DIR}/CheckLoopClosure.cmake")
+set_tests_properties(loop_closure PROPERTIES WORKING_DIRECTORY "${loop_output}"
+  ENVIRONMENT "SLAM_HEADLESS=1" TIMEOUT 300)
 example_test(gen_vocab "${reg}")
 set(pnp "${PROJECT_SOURCE_DIR}/${pnp_dir}/data")
 example_test(pose_estimation_3d2d "${pnp}/1.png" "${pnp}/2.png" "${pnp}/1_depth.png" "${pnp}/2_depth.png")
