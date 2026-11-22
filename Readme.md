@@ -32,7 +32,7 @@ CTest는 저장소에 포함된 이미지, 포인트 클라우드, 그래프, �
 
 ## 개별 예제 실행
 
-아래 명령은 저장소 루트에서 실행합니다. 이미지 창에서 키를 누르면 종료됩니다.
+아래 명령은 저장소 루트에서 실행합니다. ORB 예제는 한 창의 위쪽에 필터링된 매칭을, 아래쪽에 첫 이미지의 특징점과 전체 매칭을 표시합니다. 삼각측량 예제는 두 카메라의 영상과 상대 깊이 색상 범례를 한 창에 표시합니다. 이미지 창에서 키를 누르면 종료됩니다.
 
 ```bash
 ./KalmanFilter/build/kalman-test
@@ -46,6 +46,8 @@ CTest는 저장소에 포함된 이미지, 포인트 클라우드, 그래프, �
 ```bash
 ./build/deps/bin/ctest --test-dir build/macos -N -V
 ```
+
+사전학습된 SuperPoint로 같은 두 영상을 매칭하는 Python 예제도 실행할 수 있습니다. [SuperPoint 실행 방법](Keypoint%26Descriptor/readme.md#superpoint로-두-영상-매칭하기)
 
 ## Jetson / Ubuntu
 
