@@ -10,7 +10,7 @@
 class BAView : public lecture::OrbitView {
  public:
   BAView(const BAHistory &history, const BALProblem &bal)
-      : OrbitView("Bundle adjustment", history.frames.size(), WorldY::Up), history_(history), bal_(bal) {
+      : OrbitView("Bundle adjustment", history.frames.size()), history_(history), bal_(bal) {
     const auto &initial = history.frames.front();
     std::vector<cv::Vec3d> bounds;
     // Frame the central cloud and all camera centers; distant landmarks still render.

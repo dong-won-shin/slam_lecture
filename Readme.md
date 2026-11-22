@@ -21,6 +21,8 @@
 | 13 | SLAM 백엔드 | [루프 폐쇄 후보 검색](lessons/04_slam_backend/13_loop_closure/readme.md) | 시각 단어 사전으로 과거 영상 중 같은 장소의 후보를 검색한다. |
 | 14 | SLAM 백엔드 | [포즈 그래프 최적화](lessons/04_slam_backend/14_pose_graph/readme.md) | 상대 자세 제약을 이용해 그래프 전체의 카메라 자세를 조정한다. |
 
+3D 뷰어는 월드 +Y축을 화면 위쪽에 표시한다. 왼쪽 드래그로 시점을 돌려도 +Y 방향을 확인할 수 있다.
+
 ## 폴더 구조
 
 ```text

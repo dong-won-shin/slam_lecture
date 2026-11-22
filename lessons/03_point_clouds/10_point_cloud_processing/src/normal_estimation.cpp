@@ -1,9 +1,32 @@
+#include <cmath>
 #include <cstdlib>
 #include <pcl/common/io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <vtkCallbackCommand.h>
+#include <vtkCamera.h>
+#include <vtkNew.h>
+#include <vtkRendererCollection.h>
+
+static void keep_y_up(vtkObject *caller, unsigned long, void *, void *) {
+  auto *camera = vtkRenderer::SafeDownCast(caller)->GetActiveCamera();
+  const double *dir = camera->GetDirectionOfProjection();
+  const double horizontal = std::hypot(dir[0], dir[2]);
+  // At either pole world Y would project to a point. Keep a small pitch margin.
+  const double min_horizontal = 0.02;
+  if (horizontal < min_horizontal) {
+    const double azimuth = std::atan2(dir[0], dir[2]);
+    const double dy = std::copysign(std::sqrt(1 - min_horizontal * min_horizontal), dir[1]);
+    const double *focus = camera->GetFocalPoint();
+    const double distance = camera->GetDistance();
+    camera->SetPosition(focus[0] - distance * min_horizontal * std::sin(azimuth),
+                        focus[1] - distance * dy,
+                        focus[2] - distance * min_horizontal * std::cos(azimuth));
+  }
+  camera->SetViewUp(0, 1, 0);
+}
 
 int main(int argc, char **argv) {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(
@@ -46,5 +69,10 @@ int main(int argc, char **argv) {
   // Display one normal out of 20, as a line of length 3cm.
   viewer.addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(cloud, cloud_normals,
                                                            20, 0.03, "normals");
+  // Apply the same up direction after trackball gestures and PCL camera resets.
+  vtkNew<vtkCallbackCommand> y_up;
+  y_up->SetCallback(keep_y_up);
+  auto *renderer = viewer.getRendererCollection()->GetFirstRenderer();
+  renderer->AddObserver(vtkCommand::StartEvent, y_up);
   viewer.spin();
 }

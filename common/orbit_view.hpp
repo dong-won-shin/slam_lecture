@@ -11,9 +11,8 @@ namespace lecture {
 
 class OrbitView {
  protected:
-  enum class WorldY { Down, Up };
-  OrbitView(const std::string &title, size_t count, WorldY world_y = WorldY::Down)
-      : title_(title), count_(count), world_y_(world_y) {}
+  OrbitView(const std::string &title, size_t count)
+      : title_(title), count_(count) {}
   virtual ~OrbitView() = default;
   virtual cv::Mat render() const = 0;
   virtual bool handle_key(int) { return false; }
@@ -69,11 +68,9 @@ class OrbitView {
 
   cv::Point2d rotate(cv::Vec3d p) const {
     p -= pivot_;
-    if (world_y_ == WorldY::Up) {
-      // Rotate into the right-handed display frame (+Y down, +Z forward).
-      p[1] = -p[1];
-      p[2] = -p[2];
-    }
+    // Convert the Y-up world to the right-handed display frame (+Y down, +Z forward).
+    p[1] = -p[1];
+    p[2] = -p[2];
     const double z = -std::sin(yaw_) * p[0] + std::cos(yaw_) * p[2];
     return {std::cos(yaw_) * p[0] + std::sin(yaw_) * p[2],
             std::cos(pitch_) * p[1] - std::sin(pitch_) * z};
@@ -117,7 +114,6 @@ class OrbitView {
  private:
   const std::string title_;
   const size_t count_;
-  const WorldY world_y_;
   const double initial_yaw = 0.92, initial_pitch = 0.52;
   cv::Vec3d pivot_;
   double yaw_ = initial_yaw, pitch_ = initial_pitch, zoom_ = 1.0, scale_ = 1.0;
