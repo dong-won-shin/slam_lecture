@@ -1,8 +1,8 @@
-# 05. Optical flow — LK와 DIS
+# 05. Optical flow — LK, DIS, FlowNetS
 
-동영상의 연속 프레임에서 카메라나 물체의 움직임이 화면에 어떻게 나타나는지 비교한다. 두 예제 모두 오른쪽이 양의 x, 아래쪽이 양의 y이며 변위 단위는 픽셀이다.
+동영상의 연속 프레임에서 카메라나 물체의 움직임이 화면에 어떻게 나타나는지 비교한다. 세 예제 모두 오른쪽이 양의 x, 아래쪽이 양의 y이며 변위 단위는 픽셀이다.
 
-아래 두 그림은 같은 영상의 **31번 → 32번 프레임**을 처리한 결과다. 모니터 테두리와 검은 화면 안쪽을 비교해 보자.
+아래 세 그림은 같은 영상의 **31번 → 32번 프레임**을 처리한 결과다. 모니터 테두리와 검은 화면 안쪽을 비교해 보자.
 
 ![LK가 31번 프레임의 코너를 32번 프레임까지 추적한 결과](figures/lk-flow.jpg)
 
@@ -12,19 +12,25 @@
 
 **DIS**의 오른쪽에서는 코너 사이에도 색이 이어진다. 아래 범례와 색을 대조하면 이동 방향을 읽을 수 있고, 같은 방향에서는 밝을수록 변위가 크다.
 
+![FlowNetS가 같은 프레임 쌍에서 추정한 이동 화살표와 픽셀별 색상](figures/flownet-flow.jpg)
+
+**FlowNetS**의 화살표는 모니터와 책상에서 대체로 왼쪽을 향한다. 오른쪽 이동장의 청록색은 왼쪽 방향을 뜻한다. 모니터 경계 주변에서 DIS와 FlowNetS의 색이 얼마나 급격하게 바뀌는지 비교해 본다. [FlowNetS 실행 결과 MP4 · 5.9초](media/flownet.mp4)
+
 | 예제 | 어디에서 변위를 구하는가? | 화면에서 확인할 것 |
 |---|---|---|
 | 피라미드 Lucas–Kanade (LK) | 첫 영상에서 검출한 코너 중 추적에 성공한 점 | 코너가 어디에 몰려 있는지, 어느 점이 다음 영상까지 추적되는지 |
 | Dense Inverse Search (DIS) | 첫 영상의 모든 픽셀 | 물체 경계에서 이동 방향이나 크기가 어떻게 달라지는지 |
+| FlowNetS | 두 RGB 프레임을 신경망에 입력해 첫 영상의 모든 픽셀에서 추정 | 같은 변위 색상 범례로 DIS와 물체 경계 비교 |
 
 ## 동영상으로 실행하기
 
-저장소 루트에서 `./build.sh`로 빌드한 뒤 아래 명령을 실행한다. 각 명령은 창 하나에서 6초짜리 실내 촬영 영상을 끝까지 재생한다. 재생 중 `q`나 `Esc`를 누르면 일찍 종료할 수 있다.
+LK와 DIS는 저장소 루트에서 `./build.sh`로 빌드한다. FlowNetS는 아래의 Python 환경을 사용한다. 각 명령은 창 하나에서 6초짜리 실내 촬영 영상을 끝까지 재생한다. 재생 중 `q`나 `Esc`를 누르면 일찍 종료할 수 있다.
 
 ```bash
 cd lessons/02_visual_odometry/05_optical_flow
 ./run.sh lk --video
 ./run.sh dis --video
+./run.sh flownet --video
 ```
 
 직접 촬영한 영상은 `--video` 뒤에 경로를 넣는다. 결과 영상을 저장하려면 `--output`을 붙인다. 아래 두 번째 명령은 샘플을 창 없이 처리해 현재 폴더의 `lk_result.mp4`에 저장한다.
@@ -45,6 +51,28 @@ SLAM_HEADLESS=1 ./run.sh lk --video --output lk_result.mp4
 ## DIS — 픽셀별 이동장
 
 [src/dis_optical_flow.cpp](src/dis_optical_flow.cpp)는 OpenCV의 DIS 중간 품질 프리셋으로 픽셀마다 수평·수직 변위를 추정한다. 왼쪽에는 24픽셀 간격으로 화살표를 표시하고 오른쪽에는 전체 이동장을 그린다. 색상은 아래 범례의 방향을, 밝기는 이동 크기를 나타낸다. 0픽셀은 검은색이고 32픽셀 이상은 최대 밝기다. 무늬가 적은 벽에도 값이 나오므로 주변의 뚜렷한 경계와 함께 해석한다. [OpenCV DIS 문서](https://docs.opencv.org/4.x/de/d4f/classcv_1_1DISOpticalFlow.html)
+
+## FlowNetS — 신경망으로 이동장 추정하기
+
+두 프레임을 시간순으로 연결해 6채널 입력을 만든다. 인코더는 해상도를 줄이며 특징을 추출하고, 디코더는 낮은 해상도에서 시작한 이동장을 단계적으로 보정한다. 입력을 64의 배수 크기로 조정하므로, 출력은 원본 영상 크기로 복원하면서 수평·수직 변위도 각 축의 배율에 맞춰 되돌린다. [FlowNet 논문](https://openaccess.thecvf.com/content_iccv_2015/html/Dosovitskiy_FlowNet_Learning_Optical_ICCV_2015_paper.html) · [PTLFlow의 FlowNetS 구현 및 사전학습 가중치](https://github.com/hmorimitsu/ptlflow/blob/main/ptlflow/models/flownet/flownets.py)
+
+04번 SuperPoint 실습의 Python 환경이 있으면 `run.sh`가 자동으로 사용한다. 새 Mac에서는 저장소 루트에서 `./build_3rdparty.sh`를 실행한 후, **05번 실습 폴더**에서 다음 두 명령으로 전용 환경을 설치할 수 있다.
+
+```bash
+../../../build/tools/bin/micromamba --no-rc create -y --root-prefix "$PWD/../../../build/mamba" \
+  --prefix "$PWD/build/flownet-env" --override-channels -c conda-forge python=3.11 pip
+./build/flownet-env/bin/python -m pip install -r requirements-flownet.txt
+```
+
+첫 실행 때 PTLFlow의 `things` 가중치(약 148MiB)를 `build/model-cache/`에 내려받는다. 이후에는 캐시를 재사용한다. Apple Silicon에서는 사용 가능한 경우 MPS를 선택한다. CPU는 `--device cpu`로 지정하고, 다른 Python 환경은 `FLOWNET_PYTHON`에 인터프리터 경로를 지정한다.
+
+```bash
+./run.sh flownet --video
+./run.sh flownet ../04_local_features/data/1.png ../04_local_features/data/2.png --device cpu
+SLAM_HEADLESS=1 ./run.sh flownet --video --output build/flownet-result.mp4
+```
+
+`./run.sh flownet`은 기본 이미지 두 장을 비교한다. 창 없이 실행하면 `build/flownet_flow.png`에 결과를 저장한다. 영상 입력에는 `--video ~/Movies/walk.mp4`처럼 경로를 줄 수 있다. MP4의 재생 속도는 입력 영상의 프레임률을 따른다.
 
 ## 정지 이미지 두 장으로 비교하기
 

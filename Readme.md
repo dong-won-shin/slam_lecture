@@ -27,7 +27,7 @@ flowchart LR
 | 02 | 기초 | [비선형 최소제곱](lessons/01_foundations/02_least_squares/readme.md) | 같은 곡선 피팅 문제를 Gauss–Newton, Ceres, g2o로 푼다. | [MP4](lessons/01_foundations/02_least_squares/media/demo.mp4) |
 | 03 | 기초 | [칼만 필터](lessons/01_foundations/03_kalman_filter/readme.md) | 위치 관측값으로 위치·속도·가속도를 추정한다. | [MP4](lessons/01_foundations/03_kalman_filter/media/demo.mp4) |
 | 04 | 비주얼 오도메트리 | [지역 특징점과 매칭](lessons/02_visual_odometry/04_local_features/readme.md) | 같은 영상 쌍에서 ORB와 SuperPoint로 대응점을 찾는다. | [MP4](lessons/02_visual_odometry/04_local_features/media/demo.mp4) |
-| 05 | 비주얼 오도메트리 | [Optical flow](lessons/02_visual_odometry/05_optical_flow/readme.md) | 실내 촬영 동영상의 연속 프레임에서 LK의 코너 추적과 DIS의 픽셀별 이동장을 비교한다. | [MP4](lessons/02_visual_odometry/05_optical_flow/media/demo.mp4) |
+| 05 | 비주얼 오도메트리 | [Optical flow](lessons/02_visual_odometry/05_optical_flow/readme.md) | 실내 촬영 동영상의 연속 프레임에서 LK의 코너 추적, DIS와 사전학습 FlowNetS의 픽셀별 이동장을 비교한다. | [LK·DIS](lessons/02_visual_odometry/05_optical_flow/media/demo.mp4) · [FlowNetS](lessons/02_visual_odometry/05_optical_flow/media/flownet.mp4) |
 | 06 | 비주얼 오도메트리 | [에피폴라 기하](lessons/02_visual_odometry/06_epipolar_geometry/readme.md) | 한 사진의 점을 선택해 다른 사진의 에피폴라 선과 관측된 대응점 사이의 거리를 확인한다. | [MP4](lessons/02_visual_odometry/06_epipolar_geometry/media/demo.mp4) |
 | 07 | 비주얼 오도메트리 | [두 시점 삼각측량](lessons/02_visual_odometry/07_triangulation/readme.md) | 두 사진의 대응점에서 3D 점을 복원하고, 장면을 회전하며 두 카메라의 관측 광선을 비교한다. | [MP4](lessons/02_visual_odometry/07_triangulation/media/demo.mp4) |
 | 08 | 비주얼 오도메트리 | [OpenGV 삼각측량](lessons/02_visual_odometry/08_opengv_triangulation/readme.md) | 합성 장면을 3D로 회전하며 OpenGV 두 방법의 복원점과 정답 사이의 거리를 비교한다. | [MP4](lessons/02_visual_odometry/08_opengv_triangulation/media/demo.mp4) |
@@ -64,7 +64,7 @@ Xcode Command Line Tools가 필요하다. `xcode-select -p`에서 경로를 찾�
 ./lessons/01_foundations/01_camera_projection/run.sh
 ```
 
-첫 명령은 micromamba로 CMake, Ninja, Eigen, OpenCV, PCL, Ceres를 설치하고 OpenGV를 준비한다. 처음 설치할 때는 인터넷 연결이 필요하다. 두 번째 명령은 C++ 예제 25개를 빌드한다. Python으로 실행하는 [SuperPoint 실습](lessons/02_visual_odometry/04_local_features/readme.md#superpoint로-두-영상-매칭하기)은 04번 실습 안내에서 별도 환경을 설치한다.
+첫 명령은 micromamba로 CMake, Ninja, Eigen, OpenCV, PCL, Ceres를 설치하고 OpenGV를 준비한다. 처음 설치할 때는 인터넷 연결이 필요하다. 두 번째 명령은 C++ 예제 25개를 빌드한다. Python으로 실행하는 [SuperPoint](lessons/02_visual_odometry/04_local_features/readme.md#superpoint로-두-영상-매칭하기)와 [FlowNetS](lessons/02_visual_odometry/05_optical_flow/readme.md#flownets--신경망으로-이동장-추정하기)의 환경 설치 방법은 각 실습에 있다.
 
 ## 개별 실습 다시 빌드하기
 
