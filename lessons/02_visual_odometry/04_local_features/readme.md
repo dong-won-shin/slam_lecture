@@ -1,11 +1,17 @@
-# How to use 
+# 04. 지역 특징점과 매칭
 
-```
+같은 영상 쌍에서 ORB와 SuperPoint로 대응점을 찾는다. 전체 매칭에서 어떤 대응점이 필터링 후에도 남는지 두 영상을 함께 보며 확인합니다.
+
+아래 명령은 이 실습의 `build/`에서 실행합니다.
+
+```bash
 ./orb_cv ../data/1.png ../data/2.png
+./orb_self ../data/1.png ../data/2.png
 ```
+
 ## SuperPoint로 두 영상 매칭하기
 
-`Keypoint&Descriptor/build/`에서 아래 명령을 실행합니다. 저장소의 `data/1.png`와 `data/2.png`가 기본 입력입니다.
+이 실습의 `build/`에서 아래 명령을 실행합니다. 저장소의 `data/1.png`와 `data/2.png`가 기본 입력입니다.
 
 ```bash
 ./superpoint-env/bin/python ../src/superpoint.py --show
@@ -24,8 +30,8 @@
 저장소 루트에서 `./build_3rdparty.sh`를 실행한 뒤 다음 명령으로 별도 Python 환경을 만듭니다.
 
 ```bash
-cd 'Keypoint&Descriptor'
-../build/tools/bin/micromamba --no-rc create -y --root-prefix "$PWD/../build/mamba" \
+cd lessons/02_visual_odometry/04_local_features
+../../../build/tools/bin/micromamba --no-rc create -y --root-prefix "$PWD/../../../build/mamba" \
   --prefix "$PWD/build/superpoint-env" --override-channels -c conda-forge python=3.11 pip
 ./build/superpoint-env/bin/python -m pip install -r requirements-superpoint.txt
 ```
