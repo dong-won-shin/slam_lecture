@@ -34,8 +34,9 @@
 #include <iomanip>
 #include <opengv/triangulation/methods.hpp>
 #include <opengv/relative_pose/CentralRelativeAdapter.hpp>
-#include <sstream>
-#include <fstream>
+#include <cerrno>
+#include <limits>
+#include "opengv_view.hpp"
 
 #include "random_generators.hpp"
 #include "experiment_helpers.hpp"
@@ -48,8 +49,21 @@ using namespace opengv;
 
 int main( int argc, char** argv )
 {
-  // initialize random seed
-  initializeRandomSeed();
+  if (argc == 1) {
+    initializeRandomSeed();
+  } else if (argc == 3 && std::string(argv[1]) == "--seed") {
+    char *end = nullptr;
+    errno = 0;
+    const unsigned long seed = std::strtoul(argv[2], &end, 10);
+    if (*argv[2] < '0' || *argv[2] > '9' || *end || errno || seed > std::numeric_limits<unsigned>::max()) {
+      std::cerr << "Expected an unsigned integer seed.\n";
+      return 1;
+    }
+    std::srand(static_cast<unsigned>(seed));
+  } else {
+    std::cerr << "Usage: test_triangulation [--seed N]\n";
+    return 1;
+  }
 
   //set experiment parameters
   double noise = 0.5;
@@ -151,4 +165,17 @@ int main( int argc, char** argv )
     error(0,i) = singleError.norm();
   }
   std::cout << "triangulation error is: " << std::endl << error << std::endl;
+
+  if (!triangulate_results.allFinite() || !triangulate2_results.allFinite()) {
+    std::cerr << "Triangulation produced a non-finite estimate.\n";
+    return 1;
+  }
+  auto xyz = [](const Eigen::Vector3d &v) { return cv::Vec3d(v.x(), v.y(), v.z()); };
+  std::vector<OpenGVPoint> points;
+  for (size_t j = 0; j < numberPoints; ++j) {
+    points.push_back({xyz(gt.col(j)), xyz(triangulate_results.col(j)), xyz(triangulate2_results.col(j)),
+                      xyz(bearingVectors1[j]), xyz(rotation * bearingVectors2[j])});
+  }
+  OpenGVView view(points, xyz(position));
+  return view.show();
 }

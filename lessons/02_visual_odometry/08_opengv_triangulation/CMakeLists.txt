@@ -13,10 +13,12 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -O2 ${SSE_FLAGS}")
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 find_package(opengv REQUIRED)
+find_package(OpenCV REQUIRED COMPONENTS core imgcodecs imgproc highgui)
 
 include_directories(
         "/usr/include/eigen3/"
-        "./include"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../../common"
+        ${OpenCV_INCLUDE_DIRS}
 )
 
 add_library(random_generators src/random_generators.cpp
@@ -28,5 +30,4 @@ add_library(random_generators src/random_generators.cpp
 target_link_libraries(random_generators opengv)
 
 add_executable(test_triangulation src/test_triangulation.cpp)
-target_link_libraries(test_triangulation opengv random_generators)
-  
+target_link_libraries(test_triangulation opengv random_generators ${OpenCV_LIBS})
