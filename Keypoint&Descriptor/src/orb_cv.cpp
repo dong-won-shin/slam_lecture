@@ -1,9 +1,10 @@
-#include <cstdlib>
 #include <chrono>
+#include <cstdlib>
 #include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include "../../common/image_panel.hpp"
 
 using namespace std;
 using namespace cv;
@@ -67,14 +68,21 @@ int main(int argc, char **argv) {
   Mat img_goodmatch;
   drawMatches(img_1, keypoints_1, img_2, keypoints_2, matches, img_match);
   drawMatches(img_1, keypoints_1, img_2, keypoints_2, good_matches,
-              img_goodmatch);
+              img_goodmatch, Scalar(88, 225, 255), Scalar::all(-1), vector<char>(),
+              DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+
+  Mat overview(678, 960, CV_8UC3, Scalar(29, 26, 24));
+  lecture::draw_panel(overview, {12, 8, 936, 381}, img_goodmatch,
+                      "Filtered matches  (" + to_string(good_matches.size()) + ")");
+  lecture::draw_panel(overview, {12, 401, 308, 261}, outimg1,
+                      "Keypoints / view 1  (" + to_string(keypoints_1.size()) + ")");
+  lecture::draw_panel(overview, {332, 401, 616, 261}, img_match,
+                      "All matches  (" + to_string(matches.size()) + ")");
   if (std::getenv("SLAM_HEADLESS")) {
     imwrite("good_matches.png", img_goodmatch);
+    imwrite("orb_overview.png", overview);
   } else {
-    imshow("ORB features", outimg1);
-    imshow("all matches", img_match);
-    imshow("good matches", img_goodmatch);
-    waitKey(0);
+    lecture::show_result("ORB feature matching", overview);
   }
 
   return 0;

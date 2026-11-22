@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include "../../common/image_panel.hpp"
 
 using namespace std;
 using namespace cv;
@@ -19,13 +20,13 @@ void triangulation(const vector<KeyPoint> &keypoint_1,
                    const std::vector<DMatch> &matches, const Mat &R,
                    const Mat &t, vector<Point3d> &points);
 
+constexpr float near_depth = 10.0f;
+constexpr float far_depth = 50.0f;
+
 inline cv::Scalar get_color(float depth) {
-  float up_th = 50, low_th = 10, th_range = up_th - low_th;
-  if (depth > up_th)
-    depth = up_th;
-  if (depth < low_th)
-    depth = low_th;
-  return cv::Scalar(255 * depth / th_range, 0, 255 * (1 - depth / th_range));
+  const float t = (std::max(near_depth, std::min(depth, far_depth)) - near_depth) /
+                  (far_depth - near_depth);
+  return cv::Scalar(255 * t, 0, 255 * (1 - t));
 }
 
 Point2f pixel2cam(const Point2d &p, const Mat &K);
@@ -54,7 +55,6 @@ int main(int argc, char **argv) {
   for (int i = 0; i < matches.size(); i++) {
     float depth1 = points[i].z;
     cout << "depth: " << depth1 << endl;
-    Point2d pt1_cam = pixel2cam(keypoints_1[matches[i].queryIdx].pt, K);
     cv::circle(img1_plot, keypoints_1[matches[i].queryIdx].pt, 2,
                get_color(depth1), 2);
 
@@ -64,13 +64,27 @@ int main(int argc, char **argv) {
     cv::circle(img2_plot, keypoints_2[matches[i].trainIdx].pt, 2,
                get_color(depth2), 2);
   }
+  Mat overview(450, 1040, CV_8UC3, Scalar(29, 26, 24));
+  lecture::draw_panel(overview, {12, 8, 502, 407}, img1_plot, "Camera 1");
+  lecture::draw_panel(overview, {526, 8, 502, 407}, img2_plot, "Camera 2");
+  const Scalar label_color(220, 220, 220);
+  putText(overview, "Relative depth", {12, 438}, FONT_HERSHEY_SIMPLEX, 0.49,
+          label_color, 1, LINE_AA);
+  putText(overview, "<= 10", {145, 438}, FONT_HERSHEY_SIMPLEX, 0.49,
+          label_color, 1, LINE_AA);
+  const Rect legend(208, 427, 120, 10);
+  for (int x = 0; x < legend.width; ++x) {
+    const float depth = near_depth + (far_depth - near_depth) * x / (legend.width - 1);
+    overview(Rect(legend.x + x, legend.y, 1, legend.height)).setTo(get_color(depth));
+  }
+  putText(overview, ">= 50", {338, 438}, FONT_HERSHEY_SIMPLEX, 0.49,
+          label_color, 1, LINE_AA);
   if (std::getenv("SLAM_HEADLESS")) {
     cv::imwrite("view1.png", img1_plot);
     cv::imwrite("view2.png", img2_plot);
+    cv::imwrite("triangulation_overview.png", overview);
   } else {
-    cv::imshow("img 1", img1_plot);
-    cv::imshow("img 2", img2_plot);
-    cv::waitKey();
+    lecture::show_result("Triangulation", overview);
   }
 
   return 0;
