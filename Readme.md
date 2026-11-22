@@ -19,7 +19,7 @@
 | 11 | 포인트 클라우드 | [점군 정합](lessons/03_point_clouds/11_point_cloud_registration/readme.md) | 대응점 기반 SVD 정합과 반복 최근접점 정합(ICP)을 실험한다. |
 | 12 | SLAM 백엔드 | [번들 조정](lessons/04_slam_backend/12_bundle_adjustment/readme.md) | Ceres가 카메라와 3D 점을 함께 조정하는 과정을 단계별로 재생하고 재투영 오차를 확인한다. |
 | 13 | SLAM 백엔드 | [루프 폐쇄 후보 검색](lessons/04_slam_backend/13_loop_closure/readme.md) | KITTI 주행 사진에서 같은 도로의 재방문 후보를 찾고 DBoW3 검색 순위와 ORB 대응점을 비교한다. |
-| 14 | SLAM 백엔드 | [포즈 그래프 최적화](lessons/04_slam_backend/14_pose_graph/readme.md) | 상대 자세 제약을 이용해 그래프 전체의 카메라 자세를 조정한다. |
+| 14 | SLAM 백엔드 | [포즈 그래프 최적화](lessons/04_slam_backend/14_pose_graph/readme.md) | 상대 자세 제약으로 조정되는 3D 그래프를 초기 궤적과 반복별로 비교한다. |
 
 07번 두 시점 삼각측량은 카메라 좌표계에 맞춰 +Y축을 화면 아래쪽에 표시한다. 다른 3D 뷰어는 +Y축을 화면 위쪽에 표시한다.
 
