@@ -1,11 +1,11 @@
-#include "common.hpp"
+#include "ba_view.hpp"
 #include "snavely_reprojection_error.hpp"
 #include <ceres/ceres.h>
 #include <iostream>
 
 using namespace std;
 
-void SolveBA(BALProblem &bal_problem);
+bool SolveBA(BALProblem &bal_problem, BAHistory &history);
 
 int main(int argc, char **argv) {
   if (argc != 2) {
@@ -14,16 +14,25 @@ int main(int argc, char **argv) {
   }
 
   BALProblem bal_problem(argv[1]);
+  if (bal_problem.num_cameras() <= 0 || bal_problem.num_points() <= 0 ||
+      bal_problem.num_observations() <= 0) {
+    std::cerr << "Expected a BAL dataset with cameras, landmarks and observations.\n";
+    return 1;
+  }
   bal_problem.Normalize();
   bal_problem.Perturb(0.1, 0.5, 0.5);
   bal_problem.WriteToPLYFile("initial.ply");
-  SolveBA(bal_problem);
+  BAHistory history(bal_problem);
+  if (!SolveBA(bal_problem, history)) return 1;
   bal_problem.WriteToPLYFile("final.ply");
 
-  return 0;
+  std::cout << "Recorded " << history.frames.size() << " states. Reprojection RMS: "
+            << history.frames.front().rms << " -> " << history.frames.back().rms << " px\n";
+  BAView view(history, bal_problem);
+  return view.show();
 }
 
-void SolveBA(BALProblem &bal_problem) {
+bool SolveBA(BALProblem &bal_problem, BAHistory &history) {
   const int point_block_size = bal_problem.point_block_size();
   const int camera_block_size = bal_problem.camera_block_size();
   double *points = bal_problem.mutable_points();
@@ -68,7 +77,12 @@ void SolveBA(BALProblem &bal_problem) {
   ceres::Solver::Options options;
   options.linear_solver_type = ceres::LinearSolverType::SPARSE_SCHUR;
   options.minimizer_progress_to_stdout = true;
+  options.update_state_every_iteration = true;
+  options.callbacks.push_back(&history);
   ceres::Solver::Summary summary;
   ceres::Solve(options, &problem, &summary);
   std::cout << summary.FullReport() << "\n";
+  if (!summary.IsSolutionUsable()) return false;
+  history.finish(summary);
+  return true;
 }

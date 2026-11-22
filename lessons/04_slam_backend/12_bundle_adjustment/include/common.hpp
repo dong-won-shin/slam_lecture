@@ -83,16 +83,16 @@ private:
   void AngleAxisAndCenterToCamera(const double *angle_axis,
                                   const double *center, double *camera) const;
 
-  int num_cameras_;
-  int num_points_;
-  int num_observations_;
+  int num_cameras_ = 0;
+  int num_points_ = 0;
+  int num_observations_ = 0;
   int num_parameters_;
   bool use_quaternions_;
 
-  int *point_index_;
-  int *camera_index_;
-  double *observations_;
-  double *parameters_;
+  int *point_index_ = nullptr;
+  int *camera_index_ = nullptr;
+  double *observations_ = nullptr;
+  double *parameters_ = nullptr;
 };
 
 #endif // COMMON_HPP_

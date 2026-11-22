@@ -104,8 +104,8 @@ target_link_libraries(closed_form_registration PRIVATE Eigen3::Eigen ${OpenCV_LI
 
 # 04. SLAM back end
 lecture_example(bundle_adjustment_ceres ${bundle_adjustment_dir} bundle_adjustment_ceres.cpp common.cpp)
-target_include_directories(bundle_adjustment_ceres PRIVATE ${bundle_adjustment_dir}/include)
-target_link_libraries(bundle_adjustment_ceres PRIVATE Ceres::ceres)
+target_include_directories(bundle_adjustment_ceres PRIVATE common ${bundle_adjustment_dir}/include)
+target_link_libraries(bundle_adjustment_ceres PRIVATE Ceres::ceres ${OpenCV_LIBS})
 lecture_example(feature_training ${loop_closure_dir} feature_training.cpp)
 lecture_example(loop_closure ${loop_closure_dir} loop_closure.cpp)
 lecture_example(gen_vocab ${loop_closure_dir} gen_vocab_large.cpp)

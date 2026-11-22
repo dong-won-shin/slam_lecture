@@ -47,13 +47,17 @@ class OrbitView {
     while (true) {
       const int key = cv::waitKey(40);
       if (key == 27 || key == 'q' || cv::getWindowProperty(title_, cv::WND_PROP_VISIBLE) == 0) break;
+      if (handle_key(key)) {
+        cv::imshow(title_, render());
+        continue;
+      }
       switch (key) {
         case ' ': case 'n': selected_ = (selected_ + 1) % count_; break;
         case 'p': selected_ = (selected_ + count_ - 1) % count_; break;
         case '+': case '=': zoom_ = std::min(8.0, zoom_ * 1.25); break;
         case '-': zoom_ = std::max(0.25, zoom_ / 1.25); break;
         case 'r': yaw_ = initial_yaw; pitch_ = initial_pitch; zoom_ = 1.0; break;
-        default: if (!handle_key(key)) continue;
+        default: continue;
       }
       cv::imshow(title_, render());
     }
