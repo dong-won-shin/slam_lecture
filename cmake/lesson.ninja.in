@@ -1,0 +1,9 @@
+# Build this lesson using the shared dependency graph.
+rule build_lesson
+  command = "@CMAKE_COMMAND@" --build "@shared_build_dir@" --target @lesson_target@
+  description = Building @lesson@
+  pool = console
+
+build force: phony
+build all: build_lesson force
+default all

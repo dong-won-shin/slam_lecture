@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 #include <numeric>
 #include <opencv2/core.hpp>
@@ -68,9 +69,10 @@ void lidarOnImage(const cv::Mat &img, const std::vector<LidarPoint> &lidarPoints
 		X.at<double>(3, 0) = 1;
 
 		Y = P_rect_00 * RT * X;
+		if (Y.at<double>(2, 0) <= 0.0) continue;
 		cv::Point pt;
-		pt.x = Y.at<double>(0, 0) / Y.at<double>(0, 2);
-		pt.y = Y.at<double>(1, 0) / Y.at<double>(0, 2);
+		pt.x = Y.at<double>(0, 0) / Y.at<double>(2, 0);
+		pt.y = Y.at<double>(1, 0) / Y.at<double>(2, 0);
 
 		float val = it->x;
 		float maxVal = 20.0;
@@ -84,13 +86,21 @@ void lidarOnImage(const cv::Mat &img, const std::vector<LidarPoint> &lidarPoints
 
 	std::string windowName = "LiDAR data on image overlay";
 
-	cv::namedWindow(windowName, 3);
+	if (std::getenv("SLAM_HEADLESS")) {
+		cv::imwrite("projection.png", visImg);
+		return;
+	}
+	cv::namedWindow(windowName, cv::WINDOW_AUTOSIZE);
 	cv::imshow(windowName, visImg);
 	cv::waitKey(0);
 }
 
 int main(int argc, char const *argv[])
 {
+	if (argc != 3) {
+		std::cerr << "usage: 3d_point_camera_projection image lidar.dat\n";
+		return 1;
+	}
 	cv::Mat img;
 	std::vector<LidarPoint> lidar_pts;
 
@@ -99,5 +109,6 @@ int main(int argc, char const *argv[])
 
 	// load Lidar points from file
 	readLidarPts(argv[2], lidar_pts);
+	if (img.empty() || lidar_pts.empty()) return 1;
 	lidarOnImage(img, lidar_pts);
 }

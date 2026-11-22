@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [[ "$(uname -s)" == Darwin ]]; then
+  exec bash "$(dirname "$0")/scripts/setup-macos.sh"
+fi
+
 install_function ()
 {
     sudo rm -rf build

@@ -1,3 +1,5 @@
+#include <cstdlib>
+#include <pcl/common/io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
@@ -38,14 +40,11 @@ int main(int argc, char **argv) {
               << std::endl;
 
   // Visualize them.
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer(
-      new pcl::visualization::PCLVisualizer("Normals"));
-  viewer->addPointCloud<pcl::PointXYZ>(cloud, "cloud");
+  if (std::getenv("SLAM_HEADLESS")) return 0;
+  pcl::visualization::PCLVisualizer viewer("Normals");
+  viewer.addPointCloud<pcl::PointXYZ>(cloud, "cloud");
   // Display one normal out of 20, as a line of length 3cm.
-  viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(cloud, cloud_normals,
+  viewer.addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(cloud, cloud_normals,
                                                            20, 0.03, "normals");
-  while (!viewer->wasStopped()) {
-    viewer->spinOnce(100);
-    boost::this_thread::sleep(boost::posix_time::microseconds(100000));
-  }
+  viewer.spin();
 }

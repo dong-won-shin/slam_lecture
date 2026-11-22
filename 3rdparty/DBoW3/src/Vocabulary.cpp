@@ -1177,7 +1177,7 @@ void Vocabulary::save(cv::FileStorage &f,
 
 }
 
-void Vocabulary::toStream(  std::ostream &out_str, bool compressed) const throw(std::exception){
+void Vocabulary::toStream(  std::ostream &out_str, bool compressed) const{
 
     uint64_t sig=88877711233;//magic number describing the file
     out_str.write((char*)&sig,sizeof(sig));
@@ -1257,7 +1257,7 @@ void Vocabulary::toStream(  std::ostream &out_str, bool compressed) const throw(
 }
 
 
-void Vocabulary:: load_fromtxt(const std::string &filename)throw(std::runtime_error){
+void Vocabulary:: load_fromtxt(const std::string &filename){
 
     std::ifstream ifile(filename);
     if(!ifile)throw std::runtime_error("Vocabulary:: load_fromtxt  Could not open file for reading:"+filename);
@@ -1332,7 +1332,7 @@ void Vocabulary:: load_fromtxt(const std::string &filename)throw(std::runtime_er
            }
        }
 }
-void Vocabulary::fromStream(  std::istream &str )   throw(std::exception){
+void Vocabulary::fromStream(  std::istream &str ){
 
 
     m_words.clear();
@@ -1429,12 +1429,12 @@ void Vocabulary::load(const cv::FileStorage &fs,
   m_nodes.resize(fn.size() + 1); // +1 to include root
   m_nodes[0].id = 0;
 
-  for(unsigned int i = 0; i < fn.size(); ++i)
+  for (const auto &entry : fn)
   {
-    NodeId nid = (int)fn[i]["nodeId"];
-    NodeId pid = (int)fn[i]["parentId"];
-    WordValue weight = (WordValue)fn[i]["weight"];
-    std::string d = (std::string)fn[i]["descriptor"];
+    NodeId nid = (int)entry["nodeId"];
+    NodeId pid = (int)entry["parentId"];
+    WordValue weight = (WordValue)entry["weight"];
+    std::string d = (std::string)entry["descriptor"];
 
     m_nodes[nid].id = nid;
     m_nodes[nid].parent = pid;
@@ -1449,10 +1449,10 @@ void Vocabulary::load(const cv::FileStorage &fs,
 
   m_words.resize(fn.size());
 
-  for(unsigned int i = 0; i < fn.size(); ++i)
+  for (const auto &entry : fn)
   {
-    NodeId wid = (int)fn[i]["wordId"];
-    NodeId nid = (int)fn[i]["nodeId"];
+    NodeId wid = (int)entry["wordId"];
+    NodeId nid = (int)entry["nodeId"];
 
     m_nodes[nid].word_id = wid;
     m_words[wid] = &m_nodes[nid];

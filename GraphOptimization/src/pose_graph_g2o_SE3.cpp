@@ -3,9 +3,12 @@
 #include <string>
 
 #include <g2o/core/block_solver.h>
+#include <g2o/core/factory.h>
 #include <g2o/core/optimization_algorithm_levenberg.h>
 #include <g2o/solvers/eigen/linear_solver_eigen.h>
 #include <g2o/types/slam3d/types_slam3d.h>
+
+G2O_USE_TYPE_GROUP(slam3d);
 
 using namespace std;
 

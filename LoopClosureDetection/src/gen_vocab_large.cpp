@@ -10,6 +10,10 @@ using namespace cv;
 using namespace std;
 
 int main(int argc, char **argv) {
+  if (argc != 2) {
+    cerr << "usage: gen_vocab dataset_directory" << endl;
+    return 1;
+  }
   string dataset_dir = argv[1];
   ifstream fin(dataset_dir + "/associate.txt");
   if (!fin) {
@@ -17,34 +21,29 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  vector<string> rgb_files, depth_files;
-  vector<double> rgb_times, depth_times;
-  while (!fin.eof()) {
-    string rgb_time, rgb_file, depth_time, depth_file;
-    fin >> rgb_time >> rgb_file >> depth_time >> depth_file;
-    rgb_times.push_back(atof(rgb_time.c_str()));
-    depth_times.push_back(atof(depth_time.c_str()));
+  vector<string> rgb_files;
+  string rgb_time, rgb_file, depth_time, depth_file;
+  while (fin >> rgb_time >> rgb_file >> depth_time >> depth_file) {
     rgb_files.push_back(dataset_dir + "/" + rgb_file);
-    depth_files.push_back(dataset_dir + "/" + depth_file);
-
-    if (fin.good() == false)
-      break;
   }
-  fin.close();
+  if (rgb_files.empty()) return 1;
 
   cout << "generating features ... " << endl;
   vector<Mat> descriptors;
   Ptr<Feature2D> detector = ORB::create();
   int index = 1;
+  size_t feature_count = 0;
   for (string rgb_file : rgb_files) {
     Mat image = imread(rgb_file);
+    if (image.empty()) return 1;
     vector<KeyPoint> keypoints;
     Mat descriptor;
     detector->detectAndCompute(image, Mat(), keypoints, descriptor);
+    feature_count += descriptor.rows;
     descriptors.push_back(descriptor);
     cout << "extracting features from image " << index++ << endl;
   }
-  cout << "extract total " << descriptors.size() * 500 << " features." << endl;
+  cout << "extract total " << feature_count << " features." << endl;
 
   // create vocabulary
   cout << "creating vocabulary, please wait ... " << endl;

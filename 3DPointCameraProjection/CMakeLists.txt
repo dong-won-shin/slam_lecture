@@ -1,3 +1,9 @@
+if(CMAKE_HOST_APPLE)
+  cmake_minimum_required(VERSION 3.20)
+  include(../cmake/MacLesson.cmake)
+  return()
+endif()
+
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(3d_point_camera_projection)
 

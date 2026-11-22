@@ -24,9 +24,9 @@ public:
     _estimate += Eigen::Vector3d(update);
   }
 
-  virtual bool read(istream &in) {}
+  virtual bool read(istream &in) override { return false; }
 
-  virtual bool write(ostream &out) const {}
+  virtual bool write(ostream &out) const override { return false; }
 };
 
 class CurveFittingEdge
@@ -54,9 +54,9 @@ public:
     _jacobianOplusXi[2] = -y;
   }
 
-  virtual bool read(istream &in) {}
+  virtual bool read(istream &in) override { return false; }
 
-  virtual bool write(ostream &out) const {}
+  virtual bool write(ostream &out) const override { return false; }
 
 public:
   double _x;

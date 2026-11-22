@@ -1,13 +1,10 @@
 #include <chrono>
-#include <nmmintrin.h>
+#include <bitset>
+#include <cstdlib>
 #include <opencv2/opencv.hpp>
 #include <string>
 
 using namespace std;
-
-// global variables
-string first_file = "../1.png";
-string second_file = "../2.png";
 
 // 32 bit unsigned int, will have 8, 8x32=256
 typedef vector<uint32_t> DescType; // Descriptor type
@@ -35,10 +32,14 @@ void BfMatch(const vector<DescType> &desc1, const vector<DescType> &desc2,
 
 int main(int argc, char **argv) {
 
+  if (argc != 3) {
+    cerr << "usage: orb_self img1 img2" << endl;
+    return 1;
+  }
   // load image
-  cv::Mat first_image = cv::imread(first_file, 0);
-  cv::Mat second_image = cv::imread(second_file, 0);
-  assert(first_image.data != nullptr && second_image.data != nullptr);
+  cv::Mat first_image = cv::imread(argv[1], 0);
+  cv::Mat second_image = cv::imread(argv[2], 0);
+  if (first_image.empty() || second_image.empty()) return 1;
 
   // detect FAST keypoints1 using threshold=40
   chrono::steady_clock::time_point t1 = chrono::steady_clock::now();
@@ -70,9 +71,11 @@ int main(int argc, char **argv) {
   cv::Mat image_show;
   cv::drawMatches(first_image, keypoints1, second_image, keypoints2, matches,
                   image_show);
-  cv::imshow("matches", image_show);
   cv::imwrite("matches.png", image_show);
-  cv::waitKey(0);
+  if (!std::getenv("SLAM_HEADLESS")) {
+    cv::imshow("matches", image_show);
+    cv::waitKey(0);
+  }
 
   cout << "done." << endl;
   return 0;
@@ -343,7 +346,7 @@ int ORB_pattern[256 * 4] = {
 void ComputeORB(const cv::Mat &img, vector<cv::KeyPoint> &keypoints,
                 vector<DescType> &descriptors) {
   const int half_patch_size = 8;
-  const int half_boundary = 16;
+  const int half_boundary = 19; // Rotated BRIEF offsets reach ceil(sqrt(13^2 + 13^2)).
   int bad_points = 0;
   for (auto &kp : keypoints) {
     if (kp.pt.x < half_boundary || kp.pt.y < half_boundary ||
@@ -386,7 +389,7 @@ void ComputeORB(const cv::Mat &img, vector<cv::KeyPoint> &keypoints,
                                      sin_theta * q.x + cos_theta * q.y) +
                          kp.pt;
         if (img.at<uchar>(pp.y, pp.x) < img.at<uchar>(qq.y, qq.x)) {
-          d |= 1 << k;
+          d |= uint32_t{1} << k;
         }
       }
       desc[i] = d;
@@ -405,13 +408,13 @@ void BfMatch(const vector<DescType> &desc1, const vector<DescType> &desc2,
   for (size_t i1 = 0; i1 < desc1.size(); ++i1) {
     if (desc1[i1].empty())
       continue;
-    cv::DMatch m{i1, 0, 256};
+    cv::DMatch m(static_cast<int>(i1), 0, 256);
     for (size_t i2 = 0; i2 < desc2.size(); ++i2) {
       if (desc2[i2].empty())
         continue;
       int distance = 0;
       for (int k = 0; k < 8; k++) {
-        distance += _mm_popcnt_u32(desc1[i1][k] ^ desc2[i2][k]);
+        distance += std::bitset<32>(desc1[i1][k] ^ desc2[i2][k]).count();
       }
       if (distance < d_max && distance < m.distance) {
         m.distance = distance;

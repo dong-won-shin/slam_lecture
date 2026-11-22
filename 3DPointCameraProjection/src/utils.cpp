@@ -15,13 +15,14 @@ template<typename T> void read_pod(std::ifstream& in, T& t)
 }
 template<typename T> void read_pod_vector(std::ifstream& in, std::vector<T>& vect)
 {
-	long size;
+	long size = 0;
 
 	read_pod(in, size);
 	for(int i=0; i<size; ++i)
 	{
 		T t;
 		read_pod(in, t);
+		if (!in) { vect.clear(); return; }
 		vect.push_back(t);
 	}
 }

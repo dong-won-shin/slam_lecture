@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
@@ -63,9 +64,14 @@ int main(int argc, char **argv) {
     cv::circle(img2_plot, keypoints_2[matches[i].trainIdx].pt, 2,
                get_color(depth2), 2);
   }
-  cv::imshow("img 1", img1_plot);
-  cv::imshow("img 2", img2_plot);
-  cv::waitKey();
+  if (std::getenv("SLAM_HEADLESS")) {
+    cv::imwrite("view1.png", img1_plot);
+    cv::imwrite("view2.png", img2_plot);
+  } else {
+    cv::imshow("img 1", img1_plot);
+    cv::imshow("img 2", img2_plot);
+    cv::waitKey();
+  }
 
   return 0;
 }

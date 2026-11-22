@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <chrono>
 #include <iostream>
 #include <opencv2/core/core.hpp>
@@ -37,7 +38,6 @@ int main(int argc, char **argv) {
   Mat outimg1;
   drawKeypoints(img_1, keypoints_1, outimg1, Scalar::all(-1),
                 DrawMatchesFlags::DEFAULT);
-  imshow("ORB features", outimg1);
 
   vector<DMatch> matches;
   t1 = chrono::steady_clock::now();
@@ -68,9 +68,14 @@ int main(int argc, char **argv) {
   drawMatches(img_1, keypoints_1, img_2, keypoints_2, matches, img_match);
   drawMatches(img_1, keypoints_1, img_2, keypoints_2, good_matches,
               img_goodmatch);
-  imshow("all matches", img_match);
-  imshow("good matches", img_goodmatch);
-  waitKey(0);
+  if (std::getenv("SLAM_HEADLESS")) {
+    imwrite("good_matches.png", img_goodmatch);
+  } else {
+    imshow("ORB features", outimg1);
+    imshow("all matches", img_match);
+    imshow("good matches", img_goodmatch);
+    waitKey(0);
+  }
 
   return 0;
 }

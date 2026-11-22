@@ -53,7 +53,7 @@ public:
     return parameters_ + camera_block_size() * num_cameras_;
   }
 
-  /// camera参数的起始地址
+  /// Returns a pointer to the first camera parameter.
   double *mutable_cameras() { return parameters_; }
 
   double *mutable_points() {
