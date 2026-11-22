@@ -11,7 +11,7 @@
 | 03 | 기초 | [칼만 필터](lessons/01_foundations/03_kalman_filter/readme.md) | 위치 관측값으로 위치·속도·가속도를 추정한다. |
 | 04 | 비주얼 오도메트리 | [지역 특징점과 매칭](lessons/02_visual_odometry/04_local_features/readme.md) | 같은 영상 쌍에서 ORB와 SuperPoint로 대응점을 찾는다. |
 | 05 | 비주얼 오도메트리 | [Optical flow](lessons/02_visual_odometry/05_optical_flow/readme.md) | 실내 촬영 동영상의 연속 프레임에서 LK의 코너 추적과 DIS의 픽셀별 이동장을 비교한다. |
-| 06 | 비주얼 오도메트리 | [에피폴라 기하](lessons/02_visual_odometry/06_epipolar_geometry/readme.md) | 2D 대응점으로 기본 행렬과 본질 행렬을 구하고 상대 자세를 복원한다. |
+| 06 | 비주얼 오도메트리 | [에피폴라 기하](lessons/02_visual_odometry/06_epipolar_geometry/readme.md) | 한 사진의 점을 선택해 다른 사진의 에피폴라 선과 관측된 대응점 사이의 거리를 확인한다. |
 | 07 | 비주얼 오도메트리 | [두 시점 삼각측량](lessons/02_visual_odometry/07_triangulation/readme.md) | 두 카메라의 자세와 대응점으로 3D 점을 복원한다. |
 | 08 | 비주얼 오도메트리 | [OpenGV 삼각측량](lessons/02_visual_odometry/08_opengv_triangulation/readme.md) | 정답 3D 좌표가 있는 합성 장면에서 두 삼각측량 방법을 비교한다. |
 | 09 | 비주얼 오도메트리 | [PnP와 카메라 자세](lessons/02_visual_odometry/09_pnp/readme.md) | 깊이 영상으로 얻은 3D 점과 다음 영상의 2D 점으로 카메라 자세를 구한다. |
